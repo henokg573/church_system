@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Sign</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            color: #fff;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            position: absolute;
+            top:75px;
+            right:100px;
+            width: max-content;
+            height: 3.5rem;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 0.5rem;
+            overflow: hidden;
+            gap: 1rem;
+        }
+
+        .live_dot {
+            width: 1.5rem;
+            height: 1.5rem;
+            border-radius: 50%;
+            background-color: #ed0d0d;
+            margin-left: 1.5rem;
+            animation: blink 2s infinite;
+            transition: all 0.5s ease-in-out;
+        }
+
+        @keyframes blink {
+            0% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .live_sign {
+            position: relative;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #fff;
+            height: 100%;
+            background-color: #ed0d0d;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0 2rem;
+        } 
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="live_dot"></div>
+        <div class="live_sign" id="live_sign">LIVE</div>
+    </div>
+</body>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    const socket = io();
+    const container = document.querySelector('.container');
+    socket.on('receive_command', (data) => {
+        if (data.cmd === 'live_sign_in') {
+            container.style.display = 'flex';
+        } else if (data.cmd === 'live_sign_out') {
+            container.style.display = 'none';
+        }
+    });
+</script>
+</html>

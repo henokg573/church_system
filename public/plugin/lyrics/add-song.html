@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Song</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/add-song.css">
+</head>
+<body class="song_editor_page">
+    <main class="song_editor_shell">
+        <header class="song_editor_header">
+            <a class="back_to_lyrics" href="index.html"><i class="bi bi-arrow-left"></i> Lyrics</a>
+            <h1>Add Song</h1>
+            <button id="btn_save_song" form="song_editor_form" type="submit" class="setting_btn"><i class="bi bi-database-add"></i> Save to Library</button>
+        </header>
+
+        <form id="song_editor_form" class="song_editor_form">
+            <section class="song_metadata">
+                <label>Playlist<select id="song_playlist" class="property_input" required></select></label>
+                <label>Song title<input id="song_title_input" class="property_input" maxlength="200" required autofocus></label>
+                <label>Subtitle / Origin<input id="song_subtitle_input" class="property_input" maxlength="200"></label>
+            </section>
+            <section class="song_canvas" aria-label="Song slide editor">
+                <aside class="song_slide_sidebar">
+                    <div id="song_slide_list" class="song_slide_list"></div>
+                    <button type="button" id="btn_add_slide" class="mini_btn"><i class="bi bi-plus-lg"></i> New Slide</button>
+                </aside>
+                <div class="song_slide_workspace">
+                    <div class="song_slide_workspace_header">
+                        <strong id="song_slide_label">Slide 1</strong>
+                        <div class="slide_actions" aria-label="Slide actions">
+                            <button type="button" id="btn_move_slide_up" class="mini_btn slide_action_btn" aria-label="Move slide up" title="Move slide up"><i class="bi bi-arrow-up"></i></button>
+                            <button type="button" id="btn_move_slide_down" class="mini_btn slide_action_btn" aria-label="Move slide down" title="Move slide down"><i class="bi bi-arrow-down"></i></button>
+                            <button type="button" id="btn_duplicate_slide" class="mini_btn slide_action_btn" aria-label="Duplicate slide" title="Duplicate slide"><i class="bi bi-copy"></i></button>
+                            <button type="button" id="btn_delete_slide" class="mini_btn slide_action_btn danger_btn" aria-label="Delete slide" title="Delete slide"><i class="bi bi-trash3"></i></button>
+                        </div>
+                    </div>
+                    <textarea id="song_slide_text" class="property_input" placeholder="Type the lyrics for this slide"></textarea>
+                    <p>Each slide appears as one projected lyric screen.</p>
+                </div>
+            </section>
+        </form>
+    </main>
+    <script src="js/add-song.js"></script>
+</body>
+</html>

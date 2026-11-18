@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Transition Property</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+        <style>
+            :root {
+                --bg-1: #070b14;
+                --bg-2: #101827;
+                --panel: rgba(15, 23, 42, 0.7);
+                --panel-strong: rgba(15, 23, 42, 0.85);
+                --border: rgba(148, 163, 184, 0.2);
+                --text: #edf6ff;
+                --muted: #a7b8d8;
+                --orange: #f8a75a;
+                --green: #34d399;
+                --blue: #60a5fa;
+                --purple: #8b5cf6;
+            }
+
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+
+            body {
+                position: relative;
+                width: 100%;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                background:
+                    radial-gradient(circle at top left, rgba(96, 165, 250, 0.18), transparent 28%),
+                    radial-gradient(circle at bottom right, rgba(168, 85, 247, 0.12), transparent 25%),
+                    linear-gradient(135deg, var(--bg-1) 0%, var(--bg-2) 60%, #111827 100%);
+                color: var(--text);
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            }
+
+            .container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                width: 100%;
+                height: 100%;
+                overflow: hidden;
+                position: relative;
+                padding: 14px 12px 12px;
+            }
+
+            .title {
+                position: relative;
+                display: flex;
+                width: 100%;
+                height: 2.2rem;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                font-size: 0.8rem;
+                font-weight: 700;
+                letter-spacing: 0.12em;
+                text-transform: uppercase;
+                background: linear-gradient(90deg, rgba(96, 165, 250, 0.18), rgba(139, 92, 246, 0.18));
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                color: var(--text);
+                margin-top: 0.5rem;
+                backdrop-filter: blur(12px);
+                -webkit-backdrop-filter: blur(12px);
+            }
+
+            .content {
+                position: relative;
+                display: flex;
+                flex-direction: column;
+                align-items: stretch;
+                justify-content: flex-start;
+                width: 100%;
+                height: calc(100% - 2rem);
+                overflow: hidden;
+                margin-top: 12px;
+                background: rgba(15, 23, 42, 0.38);
+                border: 1px solid var(--border);
+                border-radius: 18px;
+                padding: 14px;
+                box-shadow: 0 18px 28px rgba(2, 6, 23, 0.24);
+                backdrop-filter: blur(16px);
+                -webkit-backdrop-filter: blur(16px);
+            }
+
+            .add_new_sequence {
+                width: 100%;
+                min-height: 2.4rem;
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: flex-start;
+                gap: 10px;
+                flex-wrap: wrap;
+            }
+
+            .add_new_sequence input {
+                width: 250px;
+                height: 2.2rem;
+                border: 1px solid rgba(148, 163, 184, 0.18);
+                outline: none;
+                background: rgba(15, 23, 42, 0.72);
+                color: var(--text);
+                padding: 8px 10px;
+                border-radius: 10px;
+            }
+
+            .add_new_sequence input:focus {
+                border-color: rgba(248, 167, 90, 0.8);
+                box-shadow: 0 0 0 3px rgba(248, 167, 90, 0.12);
+            }
+
+            .add_new_sequence button {
+                min-width: 100px;
+                height: 2.2rem;
+                border: 1px solid rgba(255,255,255,0.1);
+                outline: none;
+                background: linear-gradient(135deg, rgba(96, 165, 250, 0.9), rgba(139, 92, 246, 0.75));
+                color: #fff;
+                padding: 5px 12px;
+                border-radius: 10px;
+                cursor: pointer;
+                user-select: none;
+                font-weight: 700;
+                transition: transform 0.2s ease, box-shadow 0.2s ease;
+                box-shadow: 0 10px 20px rgba(96, 165, 250, 0.18);
+            }
+
+            .add_new_sequence button:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 14px 24px rgba(96, 165, 250, 0.22);
+            }
+
+            .sequnce_list {
+                width: 100%;
+                height: calc(100% - 4rem);
+                overflow-y: auto;
+                padding: 8px 2px 0;
+            }
+
+            .sequnce_header {
+                width: 100%;
+                height: 2.1rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                font-size: 0.78rem;
+                font-weight: 700;
+                letter-spacing: 0.1em;
+                text-transform: uppercase;
+                background: linear-gradient(90deg, rgba(96, 165, 250, 0.18), rgba(52, 211, 153, 0.15));
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                color: var(--text);
+                margin-top: 12px;
+            }
+
+            #sequnce_list_ul {
+                list-style: none;
+                width: 100%;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                align-items: stretch;
+                justify-content: flex-start;
+                gap: 6px;
+                user-select: none;
+                overflow-y: auto;
+                padding: 8px 0 0;
+            }
+
+            #sequnce_list_ul::-webkit-scrollbar {
+                width: 6px;
+            }
+
+            #sequnce_list_ul::-webkit-scrollbar-thumb {
+                background: linear-gradient(180deg, rgba(96,165,250,0.9), rgba(139,92,246,0.8));
+                border-radius: 10px;
+            }
+
+            #sequnce_list_ul li {
+                width: 100%;
+                height: 2.4rem;
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: flex-start;
+                gap: 10px;
+                padding: 8px 12px;
+                background: linear-gradient(135deg, rgba(15, 23, 42, 0.82), rgba(30, 41, 59, 0.5));
+                color: var(--text);
+                cursor: pointer;
+                border-radius: 10px;
+                border: 1px solid rgba(148, 163, 184, 0.12);
+                transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+            }
+
+            #sequnce_list_ul li:hover {
+                background: rgba(30, 41, 59, 0.86);
+                border-color: rgba(96, 165, 250, 0.2);
+                transform: translateX(2px);
+            }
+
+            #sequnce_list_ul li.selected {
+                background: linear-gradient(135deg, rgba(52, 211, 153, 0.26), rgba(96, 165, 250, 0.18));
+                border-color: rgba(52, 211, 153, 0.42);
+                box-shadow: 0 0 0 1px rgba(52, 211, 153, 0.24), 0 10px 18px rgba(52, 211, 153, 0.1);
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="title">Transition Property</div>
+            <div class="content">
+                <div class="add_new_sequence">
+                    <input type="text" placeholder="Add Sequence" id="sequence_name">
+                    
+                    <input type="file" id="import_file" style="display: none;" accept=".xlsx">
+                    <button onclick="add_sequence()"><i class="bi bi-plus-circle-fill"></i> Add</button>
+                    <button id="import_btn"><i class="bi bi-folder-fill"></i> Import</button>
+                </div>
+                <div class="sequnce_list" id="sequnce_list">
+                    <div class="sequnce_header">
+                        Program Sequnce
+                    </div>
+                    <ul id="sequnce_list_ul">
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </body>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="../../../lyrics/js/xlsx.full.min.js"></script>
+    <script>
+            const socket = io();
+            let sequence_list = [];
+            function display() {
+                let text = '';
+                sequence_list.forEach((item, index) => {
+                    text += `<li onclick="select_sequence(${index})"><span>${index + 1} </span><div>${item.name}</div></li>`;
+                });
+                document.getElementById("sequnce_list_ul").innerHTML = text;
+            }
+            function add_sequence(){
+                const sequence_name = document.getElementById("sequence_name").value;
+                if(sequence_name==""||sequence_name==null){
+                    return;
+                }
+                document.getElementById("sequence_name").value = "";
+                sequence_list.push({name: sequence_name,id:'0'});
+                display();
+            }
+            function select_sequence(index){
+                const sequence = sequence_list[index];
+                if(sequence){
+                    //socket.emit("command", {cmd: "transition_in", transition: sequence.name});
+                    socket.emit("command", {cmd: "transition_text", sequence: sequence_list,index: index});
+                }
+
+                // change the background color of the selected sequence
+                const list_items = document.querySelectorAll("#sequnce_list_ul li");
+                list_items.forEach((item, i) => {
+                    if(i==index){
+                        item.classList.add("selected");
+                    } else {
+                        item.classList.remove("selected");
+                    }
+                });
+            }
+            // import button click event
+            document.getElementById("import_btn").addEventListener("click", () => {
+                document.getElementById("import_file").click();
+            });
+            // import file
+            document.getElementById("import_file").addEventListener("change", (e) => {
+                const file = e.target.files[0];
+                if(file){
+                    decode_excel(file);
+                }
+            });
+
+            function decode_excel(file){
+                const reader = new FileReader();
+                reader.readAsArrayBuffer(file);
+                reader.onload = (e) => {
+                    const workbook = XLSX.read(e.target.result, {type: "array"});
+                    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const rows = XLSX.utils.sheet_to_json(sheet, {header: 1, defval: ""});
+                    rows.shift(); // Remove header row
+                    const sequence = rows
+                        .map((row) => ({
+                            name: String(row[0]).trim(),
+                            id: String(row[1]).trim()
+                        }))
+                        .filter((item) => item.name && item.id);
+
+                    if (sequence.length > 0) {
+                        sequence_list = sequence;
+                        display();
+                    }
+                };
+            }
+    </script>
+</html>

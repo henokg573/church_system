@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lyrics Preview Next</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Ethiopic:wght@400;600;700&family=Noto+Serif+Ethiopic:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html, body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        background: #f4f3ee;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        overflow: hidden;
+        user-select: none;
+      }
+      body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.65rem 0.9rem 0.75rem 0.9rem;
+        position: relative;
+      }
+
+      /* Main Background Layer */
+      .main_bg_layer {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+        pointer-events: none;
+        background-position: center;
+        background-size: cover;
+        background-repeat: no-repeat;
+        overflow: hidden;
+      }
+      .main_bg_video {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: 0;
+      }
+
+      /* Top Header: Badge + (Title over Subtitle) */
+      .song_header {
+        position: relative;
+        z-index: 2;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.45rem;
+        flex-shrink: 0;
+        max-width: 96%;
+        margin-top: 0.1rem;
+        padding: 0.1rem 0.4rem;
+      }
+      .badge {
+        flex-shrink: 0;
+        background: #2b2e35;
+        color: #ffffff;
+        font-size: 0.68rem;
+        font-weight: 700;
+        padding: 0.12rem 0.42rem;
+        border-radius: 9999px;
+        line-height: 1.25;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 1.45rem;
+        letter-spacing: -0.01em;
+        border: 1px solid rgba(255,255,255,0.18);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      }
+      .header_text {
+        display: inline-flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+        text-align: left;
+        line-height: 1.15;
+        overflow: hidden;
+      }
+      .title {
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: #1a1a1a;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-family: 'Kefa', 'Kefa III', 'Noto Serif Ethiopic', 'Noto Sans Ethiopic', 'Abyssinica SIL', 'Nyala', Arial, sans-serif;
+      }
+      .subtitle {
+        font-size: 0.60rem;
+        font-style: italic;
+        color: #4b4b4b;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-family: inherit;
+        opacity: 0.9;
+      }
+
+      /* Center Verse Area - Mini Background wraps ONLY the verse! */
+      .verse_wrapper {
+        position: relative;
+        z-index: 2;
+        flex: 1;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.2rem 0.4rem;
+        min-height: 0;
+      }
+      .verse_card {
+        position: relative;
+        max-width: 95%;
+        max-height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.6rem 1.2rem;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+        overflow: hidden;
+      }
+      .mini_bg_layer {
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        z-index: 0;
+        pointer-events: none;
+        overflow: hidden;
+        background-position: center;
+        background-size: cover;
+        background-repeat: no-repeat;
+      }
+      .mini_bg_video {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: 0;
+        border-radius: inherit;
+      }
+      .text {
+        position: relative;
+        z-index: 1;
+        font-size: 1.25rem;
+        line-height: 1.48;
+        text-align: center;
+        color: #111111;
+        font-weight: 700;
+        white-space: pre-line;
+        font-family: 'Kefa', 'Kefa III', 'Noto Serif Ethiopic', 'Noto Sans Ethiopic', 'Abyssinica SIL', 'Nyala', Arial, sans-serif;
+        word-break: break-word;
+      }
+
+      /* Footer spacer so the verse is centered vertically */
+      .footer_spacer {
+        height: 1.6rem;
+        flex-shrink: 0;
+        pointer-events: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="main_bg_layer" id="main_bg_layer">
+      <video id="main_bg_video" class="main_bg_video" autoplay muted loop playsinline style="display:none;"></video>
+    </div>
+
+    <header class="song_header" id="song_header">
+      <div id="badge" class="badge">03</div>
+      <div class="header_text">
+        <div id="title" class="title">ቅዱስ ቅዱስ ቅዱስ</div>
+        <div id="subtitle" class="subtitle">Holy Holy Holy</div>
+      </div>
+    </header>
+
+    <div class="verse_wrapper">
+      <div class="verse_card" id="verse_card">
+        <div class="mini_bg_layer" id="mini_bg_layer">
+          <video id="mini_bg_video" class="mini_bg_video" autoplay muted loop playsinline style="display:none;"></video>
+        </div>
+        <div id="text" class="text">ቅዱስ ቅዱስ ቅዱስ መላዕክት ያክብሩህ
+ዘውዳቸውን በዙፋንህ ዙሪያ ትተው
+አዕላፋት በሰማይ ይሰግዱልሀል
+አምላክ የነበርህ ያለህ የምትኖር</div>
+      </div>
+    </div>
+
+    <div class="footer_spacer"></div>
+
+    <script>
+      function hexToRgba(hex, opacity = 1) {
+        if (!hex || typeof hex !== 'string') return `rgba(20, 30, 45, ${opacity})`;
+        let clean = hex.replace('#', '').trim();
+        if (clean.length === 3) {
+          clean = clean.split('').map(c => c + c).join('');
+        }
+        if (clean.length !== 6) return hex;
+        const r = parseInt(clean.substring(0, 2), 16);
+        const g = parseInt(clean.substring(2, 4), 16);
+        const b = parseInt(clean.substring(4, 6), 16);
+        return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+      }
+
+      function render(data = {}) {
+        const title = document.getElementById('title');
+        const subtitle = document.getElementById('subtitle');
+        const badge = document.getElementById('badge');
+        const text = document.getElementById('text');
+        const songHeader = document.querySelector('.song_header');
+        const mainBgLayer = document.getElementById('main_bg_layer');
+        const mainVidEl = document.getElementById('main_bg_video');
+        const verseCard = document.getElementById('verse_card');
+        const miniBgLayer = document.getElementById('mini_bg_layer');
+        const miniVidEl = document.getElementById('mini_bg_video');
+
+        if (songHeader) songHeader.style.display = data.isTitleSlide ? 'none' : 'inline-flex';
+        if (title) title.textContent = data.title || 'Song Title';
+        if (subtitle) {
+          subtitle.textContent = data.subtitle || '';
+          subtitle.style.display = data.subtitle ? 'block' : 'none';
+        }
+        if (badge) {
+          badge.textContent = data.songNumber || '01';
+          badge.style.display = data.songNumber ? 'inline-flex' : 'none';
+        }
+        if (text) text.textContent = data.pageText || 'Preview';
+
+        if (data.fontSize && text) {
+          const previewSize = Math.max(0.75, Math.min(2.4, data.fontSize / 35));
+          text.style.fontSize = `${previewSize}rem`;
+        }
+        if (data.fontColor && text) text.style.color = data.fontColor;
+        if (data.titleColor) {
+          if (title) title.style.color = data.titleColor;
+          if (subtitle) subtitle.style.color = data.titleColor;
+        }
+
+        // Apply Main Background
+        if (mainBgLayer) {
+          mainBgLayer.style.background = '';
+          mainBgLayer.style.backgroundColor = '';
+          mainBgLayer.style.display = 'block';
+
+          const mainOp = (data.mainBgOpacity ?? 100) / 100;
+          mainBgLayer.style.opacity = mainOp;
+          const mainBlur = Number(data.mainBgBlur) || 0;
+          mainBgLayer.style.filter = mainBlur > 0 ? `blur(${mainBlur}px)` : '';
+
+          if (mainVidEl) {
+            mainVidEl.style.display = 'none';
+            mainVidEl.pause();
+          }
+
+          if (data.mainBgType === 'color') {
+            mainBgLayer.style.backgroundColor = data.mainBgColor || '#0d1320';
+          } else if (data.mainBgType === 'gradient') {
+            mainBgLayer.style.background = `linear-gradient(${data.mainGradAngle ?? 135}deg, ${data.mainGradC1 || '#0d1320'}, ${data.mainGradC2 || '#182235'}, ${data.mainGradC3 || '#0f172a'})`;
+          } else if (data.mainBgType === 'image' && data.mainImgUrl) {
+            mainBgLayer.style.background = `url(${data.mainImgUrl}) center/${data.mainImgFit || 'cover'} no-repeat`;
+          } else if (data.mainBgType === 'video' && data.mainVidUrl && mainVidEl) {
+            if (mainVidEl.src !== data.mainVidUrl && !mainVidEl.src.endsWith(data.mainVidUrl)) {
+              mainVidEl.src = data.mainVidUrl;
+            }
+            mainVidEl.muted = true;
+            mainVidEl.loop = true;
+            mainVidEl.playsInline = true;
+            mainVidEl.style.display = 'block';
+            mainVidEl.style.opacity = mainOp;
+            if (mainBlur > 0) {
+              mainVidEl.style.filter = `blur(${mainBlur}px)`;
+              mainVidEl.style.transform = 'scale(1.08)';
+            } else {
+              mainVidEl.style.filter = '';
+              mainVidEl.style.transform = '';
+            }
+            mainVidEl.play().catch(() => {});
+          } else {
+            mainBgLayer.style.display = 'none';
+          }
+        }
+        if (data.bgColor) {
+          document.body.style.backgroundColor = data.bgColor;
+        }
+
+        // Apply Mini Background ONLY to the verse card
+        if (verseCard && miniBgLayer) {
+          const show = data.miniBgShow !== false && (
+            data.miniBgType === 'color' ||
+            data.miniBgType === 'gradient' ||
+            (data.miniBgType === 'image' && Boolean(data.bgImageUrl)) ||
+            (data.miniBgType === 'video' && Boolean(data.bgVideoUrl)) ||
+            Boolean(data.miniBgColor)
+          );
+
+          if (!show || data.miniBgShow === false) {
+            miniBgLayer.style.display = 'none';
+            if (miniVidEl) {
+              miniVidEl.pause();
+              miniVidEl.style.display = 'none';
+            }
+            verseCard.style.background = 'transparent';
+            verseCard.style.backdropFilter = '';
+            verseCard.style.webkitBackdropFilter = '';
+            verseCard.style.boxShadow = 'none';
+            verseCard.style.border = 'none';
+          } else {
+            miniBgLayer.style.display = 'block';
+            miniBgLayer.style.background = '';
+            miniBgLayer.style.backgroundColor = '';
+
+            const miniOp = (data.miniBgOpacity ?? 85) / 100;
+
+            if (miniVidEl) {
+              miniVidEl.pause();
+              miniVidEl.style.display = 'none';
+            }
+
+            if (data.miniBgType === 'gradient') {
+              miniBgLayer.style.background = `linear-gradient(${data.gradAngle ?? 135}deg, ${data.gradColor1 || '#1a1a2e'}, ${data.gradColor2 || '#16213e'}, ${data.gradColor3 || '#0f3460'})`;
+              miniBgLayer.style.opacity = miniOp;
+            } else if (data.miniBgType === 'image' && data.bgImageUrl) {
+              miniBgLayer.style.background = `url(${data.bgImageUrl}) center/${data.imgFit || 'cover'} no-repeat`;
+              miniBgLayer.style.opacity = miniOp;
+            } else if (data.miniBgType === 'video' && data.bgVideoUrl && miniVidEl) {
+              if (miniVidEl.src !== data.bgVideoUrl && !miniVidEl.src.endsWith(data.bgVideoUrl)) {
+                miniVidEl.src = data.bgVideoUrl;
+              }
+              miniVidEl.muted = true;
+              miniVidEl.loop = true;
+              miniVidEl.playsInline = true;
+              miniVidEl.style.display = 'block';
+              miniVidEl.style.opacity = miniOp;
+              miniVidEl.play().catch(() => {});
+              miniBgLayer.style.background = 'transparent';
+              miniBgLayer.style.opacity = '1';
+            } else {
+              // Translucent solid color via rgba so backdrop-filter can shine through
+              miniBgLayer.style.backgroundColor = hexToRgba(data.miniBgColor || '#141e2d', miniOp);
+              miniBgLayer.style.opacity = '1';
+            }
+
+            const rad = Math.round((data.miniBgRadius ?? 18) * 0.45) + 'px';
+            verseCard.style.borderRadius = rad;
+            miniBgLayer.style.borderRadius = rad;
+
+            const padY = Math.max(2, Math.round((data.miniPaddingY ?? 26) * 0.35));
+            const padX = Math.max(4, Math.round((data.miniPaddingX ?? 40) * 0.35));
+            verseCard.style.padding = `${padY}px ${padX}px`;
+
+            // Mini Blur
+            const blurPx = Math.round((data.miniBgBlur ?? 0) * 0.45);
+            if (blurPx > 0) {
+              // 1. Frosted-glass backdrop filter on the card container
+              verseCard.style.backdropFilter = `blur(${blurPx}px)`;
+              verseCard.style.webkitBackdropFilter = `blur(${blurPx}px)`;
+
+              // 2. Blur on the mini video or image if present
+              if (miniVidEl && data.miniBgType === 'video') {
+                miniVidEl.style.filter = `blur(${blurPx}px)`;
+                miniVidEl.style.transform = 'scale(1.1)';
+              }
+              if (data.miniBgType === 'image') {
+                miniBgLayer.style.filter = `blur(${blurPx}px)`;
+                miniBgLayer.style.transform = 'scale(1.1)';
+              } else if (data.miniBgType !== 'video') {
+                miniBgLayer.style.filter = '';
+                miniBgLayer.style.transform = '';
+              }
+            } else {
+              verseCard.style.backdropFilter = '';
+              verseCard.style.webkitBackdropFilter = '';
+              miniBgLayer.style.filter = '';
+              miniBgLayer.style.transform = '';
+              if (miniVidEl) {
+                miniVidEl.style.filter = '';
+                miniVidEl.style.transform = '';
+              }
+            }
+          }
+        }
+      }
+
+      window.addEventListener('message', (event) => {
+        const payload = event.data || {};
+        if (payload.type !== 'lyrics-preview') return;
+        render(payload.data || {});
+      });
+
+      // Notify parent that iframe is ready to receive preview
+      try {
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ type: 'lyrics-preview-ready' }, '*');
+        }
+      } catch (e) {}
+    </script>
+  </body>
+</html>

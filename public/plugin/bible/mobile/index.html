@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+	<meta name="theme-color" content="#122e2a">
+	<title>Bible Browser</title>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.css">
+	<link rel="stylesheet" href="style.css">
+</head>
+<body data-mobile-page="bible">
+	<header class="mobile_header">
+		<div class="mobile_menu_wrap">
+			<button class="mobile_menu_button" id="mobile_menu_toggle" type="button" aria-label="Open system menu" aria-controls="mobile_system_menu" aria-expanded="false">
+				<i class="bi bi-list" aria-hidden="true"></i>
+			</button>
+			<nav class="mobile_system_menu" id="mobile_system_menu" aria-label="System menu" hidden>
+				<a href="/"><i class="bi bi-house-door" aria-hidden="true"></i><span>Home</span></a>
+				<a href="/plugin/bible/mobile/"><i class="bi bi-book" aria-hidden="true"></i><span>Bible</span></a>
+				<a href="/plugin/lyrics/"><i class="bi bi-music-note-beamed" aria-hidden="true"></i><span>Lyrics</span></a>
+				<a href="/plugin/timer/"><i class="bi bi-stopwatch" aria-hidden="true"></i><span>Timer</span></a>
+				<a href="/plugin/live_graphics/"><i class="bi bi-broadcast" aria-hidden="true"></i><span>Live Graphics</span></a>
+				<a href="/plugin/presenter/dashboard.html"><i class="bi bi-easel2" aria-hidden="true"></i><span>Preacher Dashboard</span></a>
+				<a href="/plugin/presenter/"><i class="bi bi-sliders" aria-hidden="true"></i><span>Presenter Control</span></a>
+			</nav>
+		</div>
+		<div class="brand">
+			<span class="brand_icon" aria-hidden="true"><i class="bi bi-book-half"></i></span>
+			<div>
+				<h1>Bible Browser</h1>
+				<p>Read and prepare verses</p>
+			</div>
+		</div>
+		<label class="translation_picker">
+			<span>Translation</span>
+			<select id="translation_books" aria-label="Select translation">
+				<option value="">Loading translations...</option>
+			</select>
+		</label>
+	</header>
+
+	<main class="mobile_workspace">
+		<section class="mobile_page mobile_books_page" id="mobile_books_page" aria-label="Books and chapters">
+			<div class="book_browser">
+				<div class="mobile_testament_tabs" role="tablist" aria-label="Testament">
+					<button class="active" type="button" role="tab" aria-selected="true" onclick="setMobileTestament('old')">Old Testament</button>
+					<button type="button" role="tab" aria-selected="false" onclick="setMobileTestament('new')">New Testament</button>
+				</div>
+				<div class="books_list" data-testament="old">
+					<div class="books_old"><ul id="books_old"></ul></div>
+					<div class="books_new"><ul id="books_new"></ul></div>
+				</div>
+			</div>
+			<div class="chapter_browser">
+				<div class="chapter_picker_header">Chapters</div>
+				<div class="chapter_number" id="chapter_number" aria-label="Chapters"></div>
+			</div>
+		</section>
+
+		<section class="mobile_page" id="mobile_bible_page" aria-label="Bible">
+			<h2 class="selected_chapter" id="selected_chapter">Choose a book</h2>
+			<div class="versus_list" id="versus_list" aria-label="Verses"></div>
+
+			<div class="controls_btn" aria-label="Verse actions">
+				<button id="btn_previous" type="button" aria-label="Previous verse"><i class="bi bi-arrow-left"></i><span>Previous</span></button>
+				<button class="btn_show" id="btn_show" type="button"><i class="bi bi-eye"></i><span>Show</span></button>
+				<button id="btn_next" type="button" aria-label="Next verse"><span>Next</span><i class="bi bi-arrow-right"></i></button>
+				<button id="btn_add_to_queue" type="button"><i class="bi bi-plus-lg"></i><span>Queue</span></button>
+			</div>
+		</section>
+
+		<section class="mobile_page mobile_library_page" id="mobile_library_page" aria-label="Library">
+			<div class="queue_list mobile_library_panel">
+				<nav class="queue_tabs" aria-label="Library views">
+					<button class="queue_tab active" id="tab_queue" type="button" onclick="switchRightTab('queue')">Queue</button>
+					<button class="queue_tab" id="tab_history" type="button" onclick="switchRightTab('history')">History</button>
+					<button class="queue_tab" id="tab_search" type="button" onclick="switchRightTab('search')">Search</button>
+					<button class="queue_tab" id="tab_property" type="button" onclick="switchRightTab('property')">Properties</button>
+				</nav>
+				<ul id="queue_list"></ul>
+				<ul id="history_list" style="display:none"></ul>
+				<div id="search_container" style="display:none">
+					<form id="bible_search_form" class="bible_search_form">
+						<input id="bible_search_input" type="search" placeholder="Search this translation" aria-label="Search selected translation" autocomplete="off">
+						<button type="submit" class="bible_search_button" aria-label="Search"><i class="bi bi-search"></i></button>
+					</form>
+					<div id="bible_search_status" role="status" aria-live="polite">Search across the selected translation.</div>
+					<ul id="search_results" aria-label="Search results"></ul>
+				</div>
+				<div id="property_container" style="display:none">
+					<iframe src="../property.html" title="Bible display properties"></iframe>
+				</div>
+			</div>
+		</section>
+	</main>
+
+	<nav class="mobile_navigation" aria-label="Main navigation">
+		<button class="active" id="mobile_nav_bible" data-page="bible" type="button" aria-current="page" onclick="setMobilePage('bible')">
+			<i class="bi bi-book"></i><span>Bible</span>
+		</button>
+		<button id="mobile_nav_books" data-page="books" type="button" onclick="setMobilePage('books')">
+			<i class="bi bi-journal-bookmark"></i><span>Books</span>
+		</button>
+		<button id="mobile_nav_library" data-page="library" type="button" onclick="setMobilePage('library')">
+			<i class="bi bi-collection"></i><span>Library</span>
+		</button>
+	</nav>
+
+	<script src="/socket.io/socket.io.js"></script>
+	<script src="../js/script.js"></script>
+	<script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <title>Timer Plugin</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.css" />
+        <link rel="stylesheet" type="text/css" media="screen" href="css/style.css" />
+        <link rel="stylesheet" href="/css/presentation-nav.css">
+        <link rel="stylesheet" href="/css/mobile-system.css">
+    </head>
+    <body>
+        <nav class="plugin_nav" aria-label="Plugin navigation">
+            <details class="mobile_tool_menu">
+                <summary aria-label="Open system menu"><i class="bi bi-list" aria-hidden="true"></i><span>Menu</span></summary>
+                <div class="mobile_tool_menu_panel">
+                    <a href="/"><i class="bi bi-house-door" aria-hidden="true"></i> Home</a>
+                    <a href="/plugin/bible/"><i class="bi bi-book" aria-hidden="true"></i> Bible</a>
+                    <a href="/plugin/lyrics/"><i class="bi bi-music-note-beamed" aria-hidden="true"></i> Lyrics</a>
+                    <a href="/plugin/timer/"><i class="bi bi-stopwatch" aria-hidden="true"></i> Timer</a>
+                    <a href="/plugin/live_graphics/"><i class="bi bi-broadcast" aria-hidden="true"></i> Live Graphics</a>
+                    <a href="/plugin/presenter/dashboard.html"><i class="bi bi-easel2" aria-hidden="true"></i> Preacher Dashboard</a>
+                    <a href="/plugin/presenter/"><i class="bi bi-sliders" aria-hidden="true"></i> Presenter Control</a>
+                </div>
+            </details>
+            <a href="/" aria-label="Main page"><i class="bi bi-house-door"></i> Home</a>
+            <a href="/plugin/presenter/dashboard.html" aria-label="Preacher Dashboard for PPT and PDF"><i class="bi bi-easel2"></i> Preacher Dashboard</a>
+            <a href="/plugin/presenter/" aria-label="Presenter Control"><i class="bi bi-sliders"></i> Presenter Control</a>
+            <a href="/plugin/bible/" aria-label="Bible plugin"><i class="bi bi-book"></i> Bible</a>
+            <a href="/plugin/lyrics/" aria-label="Lyrics plugin"><i class="bi bi-music-note-beamed"></i> Lyrics</a>
+            <a href="/plugin/timer/" class="active" aria-label="Timer plugin"><i class="bi bi-stopwatch"></i> Timer</a>
+            <a href="/plugin/live_graphics/" aria-label="Live Graphics plugin"><i class="bi bi-broadcast"></i> Live Graphics</a>
+            <button type="button" class="presentation_extend" data-presentation-open aria-label="Extend Screen 01 presentation to another monitor"><i class="bi bi-arrows-fullscreen" aria-hidden="true"></i> Extend</button>
+        </nav>
+        <div class="timer_container">
+            <div class="timer_header">
+                Timer Plugin
+            </div>
+            <div class="timer_display">
+                <span id="timer_minutes">00</span>:<span id="timer_seconds">00</span>
+            </div>
+            <div class="timer_inputs">
+                <input type="number" id="input_minutes" length="2" placeholder="min" min="0" value="10" />
+                <input type="number" id="input_seconds" length="2" placeholder="sec" min="0" max="59"  value="00" />
+            </div>
+            <div class="warning_message">
+                <div>
+                    <span id="timer_title">Timer Title</span>
+                    <input type="text" id="timer_title_input" value="የሰንበት ትምህርት ጊዜ" placeholder="Timer Title"/>
+                </div>
+                <div>
+                    <span id="warning_text">Last time Warning</span>
+                    <input type="text" id="warning_input" value="የማጠቃለያ ሰዓት" placeholder="Last Time Warning"/>
+                </div>
+                <div>
+                    <span id="endtime_message">End Time Messge</span>
+                    <input type="text" id="endtime_input" value="አልቋል" placeholder="End Time Message"/>
+                </div>
+            </div>
+            <div class="timer_controls">
+                <button id="start_timer">Start</button>
+                <button id="stop_timer">Stop</button>
+                <button id="reset_timer">Reset</button>
+                <button id="pause_hide">Show</button>
+            </div>
+        </div>
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="js/script.js"></script>
+        <script src="/js/mobile-system.js"></script>
+        <script src="/js/presentation-nav.js"></script>
+    </body>
+</html>

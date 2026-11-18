@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Song Main Display</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Ethiopic:wght@400;600;700&family=Noto+Serif+Ethiopic:wght@400;600;700&display=swap" rel="stylesheet">
+        <style>
+            * { box-sizing: border-box; margin: 0; padding: 0; }
+            html, body {
+                margin: 0;
+                width: 100%;
+                height: 100%;
+                background: transparent;
+                color: #fff;
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+                overflow: hidden;
+            }
+            body {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                position: relative;
+            }
+            .display {
+                width: 100%;
+                height: 100%;
+                display: none;
+                position: relative;
+                flex-direction: column;
+                justify-content: space-between;
+                align-items: center;
+                overflow: hidden;
+                padding: 3.5vh 5vw 4vh 5vw;
+            }
+            .background, #video {
+                position: absolute;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                z-index: 0;
+                pointer-events: none;
+            }
+
+            /* Top Header: Badge + (Title over Subtitle) */
+            .main_header {
+                position: relative;
+                z-index: 2;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 1.1rem;
+                flex-shrink: 0;
+                margin-top: 0.5vh;
+            }
+            .main_badge {
+                flex-shrink: 0;
+                background: #2b2e35;
+                color: #ffffff;
+                font-size: clamp(1.1rem, 1.6vw, 1.8rem);
+                font-weight: 700;
+                padding: 0.25em 0.7em;
+                border-radius: 9999px;
+                line-height: 1.2;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                min-width: 2.6rem;
+                letter-spacing: -0.01em;
+                border: 1px solid rgba(255,255,255,0.2);
+                box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+            }
+            .main_meta {
+                display: inline-flex;
+                flex-direction: column;
+                align-items: flex-start;
+                justify-content: center;
+                line-height: 1.15;
+                text-align: left;
+            }
+            .title {
+                position: relative;
+                z-index: 1;
+                font-size: clamp(1.4rem, 2.2vw, 2.6rem);
+                font-weight: 700;
+                white-space: nowrap;
+                font-family: 'Kefa', 'Kefa III', 'Noto Serif Ethiopic', 'Noto Sans Ethiopic', 'Abyssinica SIL', 'Nyala', Arial, sans-serif;
+            }
+            .subtitle {
+                position: relative;
+                z-index: 1;
+                font-size: clamp(0.95rem, 1.3vw, 1.6rem);
+                font-style: italic;
+                opacity: 0.88;
+                margin-top: 0.2rem;
+                white-space: nowrap;
+                font-family: inherit;
+            }
+
+            /* Inner Holder with Mini Background (CONTAINS ONLY VERSE) */
+            .inner {
+                position: relative;
+                z-index: 1;
+                width: min(88vw, 1400px);
+                flex: 1;
+                max-height: 76vh;
+                text-align: center;
+                padding: 2.5rem 3.5rem;
+                border-radius: 18px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                overflow: hidden;
+                box-sizing: border-box;
+                transition: all 0.2s ease;
+                min-height: 0;
+            }
+            .mini_background {
+                position: absolute;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+                z-index: 0;
+                border-radius: inherit;
+                overflow: hidden;
+                pointer-events: none;
+            }
+            .mini_bg_image, .mini_bg_video {
+                position: absolute;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                z-index: 0;
+            }
+            .lyrics {
+                position: relative;
+                z-index: 1;
+                font-size: clamp(2.2rem, 3.2vw, 4.4rem);
+                line-height: 1.45;
+                font-weight: 700;
+                white-space: pre-line;
+                text-shadow: 0 2px 18px rgba(0,0,0,0.4);
+                font-family: 'Kefa', 'Kefa III', 'Noto Serif Ethiopic', 'Noto Sans Ethiopic', 'Abyssinica SIL', 'Nyala', Arial, sans-serif;
+            }
+            .lyrics .line {
+                display: block;
+                margin: 0.2em 0;
+            }
+            .lyrics.title_slide {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 0.45em;
+            }
+            .title_slide_main {
+                font-size: 1.25em;
+                line-height: 1.2;
+            }
+            .title_slide_subtitle {
+                font-size: 0.65em;
+                font-weight: 400;
+                opacity: 0.85;
+            }
+
+            /* Spacer to ensure perfect vertical centering of the verse */
+            .main_footer_spacer {
+                height: clamp(1.4rem, 2.2vw, 2.8rem);
+                flex-shrink: 0;
+                pointer-events: none;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="display" class="display">
+            <!-- Main Background -->
+            <img class="background" id="background" style="display:none;position:absolute;width:100%;height:100%;top:0;left:0;object-fit:cover;z-index:0"/>
+            <video id="video" autoplay muted loop style="display:none;position:absolute;width:100%;height:100%;top:0;left:0;object-fit:cover;z-index:0">
+                <source id="main_video_src" src="" type="video/mp4">
+            </video>
+
+            <!-- Top Header: Badge, Title, Subtitle (OUTSIDE inner_holder) -->
+            <header class="main_header" id="main_header">
+                <div class="main_badge" id="display_badge">01</div>
+                <div class="main_meta">
+                    <div id="display_title" class="title">Song Title</div>
+                    <div id="display_subtitle" class="subtitle"></div>
+                </div>
+            </header>
+
+            <!-- Inner Holder with Mini Background (CONTAINS ONLY VERSE) -->
+            <div class="inner" id="inner_holder">
+                <div class="mini_background" id="mini_background">
+                    <img class="mini_bg_image" id="mini_bg_image" src="" style="display:none">
+                    <video class="mini_bg_video" id="mini_bg_video" autoplay muted loop style="display:none">
+                        <source id="mini_bg_video_src" src="" type="video/mp4">
+                    </video>
+                </div>
+                <div id="display_lyrics" class="lyrics"></div>
+            </div>
+
+            <!-- Footer spacer so verse is perfectly centered -->
+            <div class="main_footer_spacer"></div>
+        </div>
+
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+            function hexToRgba(hex, opacity = 1) {
+                if (!hex || typeof hex !== 'string') return `rgba(20, 30, 45, ${opacity})`;
+                let clean = hex.replace('#', '').trim();
+                if (clean.length === 3) {
+                    clean = clean.split('').map(c => c + c).join('');
+                }
+                if (clean.length !== 6) return hex;
+                const r = parseInt(clean.substring(0, 2), 16);
+                const g = parseInt(clean.substring(2, 4), 16);
+                const b = parseInt(clean.substring(4, 6), 16);
+                return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+            }
+
+            const socket = io();
+            const displayEl = document.getElementById('display');
+            const titleEl = document.getElementById('display_title');
+            const subtitleEl = document.getElementById('display_subtitle');
+            const badgeEl = document.getElementById('display_badge');
+            const headerEl = document.getElementById('main_header');
+            const lyricsEl = document.getElementById('display_lyrics');
+
+            const graphicProps = {
+                fontSize: 50,
+                fontColor: '#ffffff',
+                titleColor: '#ffffff',
+                chorusColor: '#ffffff',
+                mainBgType: 'gradient',
+                mainBgColor: '#0d1320',
+                mainGradC1: '#0d1320', mainGradC2: '#182235', mainGradC3: '#0f172a', mainGradAngle: 135,
+                mainImgUrl: '', mainImgFit: 'cover', mainVidUrl: '',
+                mainBgOpacity: 100, mainBgBlur: 0,
+                miniBgShow: true, miniBgType: 'color',
+                miniBgColor: '#141e2d', miniBgOpacity: 85, miniBgRadius: 18, miniBgBlur: 0,
+                miniPaddingX: 40, miniPaddingY: 26,
+                gradColor1: '#1a1a2e', gradColor2: '#16213e', gradColor3: '#0f3460', gradAngle: 135,
+                bgImageUrl: '', imgFit: 'cover', bgVideoUrl: ''
+            };
+            let isLyricsVisible = false;
+
+            function applyGraphicProps(p) {
+                if (p) Object.assign(graphicProps, p);
+                const g = graphicProps;
+
+                const innerEl = document.getElementById('inner_holder');
+                const miniBgEl = document.getElementById('mini_background');
+                const miniImgEl = document.getElementById('mini_bg_image');
+                const miniVidEl = document.getElementById('mini_bg_video');
+                const miniVidSrc = document.getElementById('mini_bg_video_src');
+
+                if (titleEl && g.titleColor) titleEl.style.color = g.titleColor;
+                if (subtitleEl && g.titleColor) {
+                    subtitleEl.style.color = g.titleColor;
+                    subtitleEl.style.opacity = '0.85';
+                }
+                if (lyricsEl && g.fontColor) lyricsEl.style.color = g.fontColor;
+                if (lyricsEl && g.fontSize) {
+                    lyricsEl.style.fontSize = `${Number(g.fontSize)}px`;
+                }
+                if (lyricsEl && g.chorusColor) {
+                    lyricsEl.querySelectorAll('.line.chorus').forEach(el => {
+                        el.style.color = g.chorusColor;
+                    });
+                }
+
+                // ── MAIN BACKGROUND ──────────────────────────────────
+                const mainImgEl = document.getElementById('background');
+                const mainVidEl = document.getElementById('video');
+                const mainVidSrc = document.getElementById('main_video_src');
+
+                displayEl.style.background = '';
+                displayEl.style.backgroundColor = '';
+                if (mainImgEl) mainImgEl.style.display = 'none';
+                if (mainVidEl) mainVidEl.style.display = 'none';
+
+                const mainOp = (g.mainBgOpacity ?? 100) / 100;
+
+                if (!isLyricsVisible) {
+                    displayEl.style.backgroundColor = 'transparent';
+                } else if (g.mainBgType === 'color') {
+                    displayEl.style.backgroundColor = g.mainBgColor || '#0d1320';
+                } else if (g.mainBgType === 'gradient') {
+                    const c1 = g.mainGradC1 || '#0d1320', c2 = g.mainGradC2 || '#182235', c3 = g.mainGradC3 || '#0f172a';
+                    displayEl.style.background = `linear-gradient(${g.mainGradAngle ?? 135}deg, ${c1}, ${c2}, ${c3})`;
+                } else if (g.mainBgType === 'image' && g.mainImgUrl && mainImgEl) {
+                    mainImgEl.src = g.mainImgUrl;
+                    mainImgEl.style.objectFit = g.mainImgFit || 'cover';
+                    mainImgEl.style.opacity = mainOp;
+                    mainImgEl.style.display = 'block';
+                    displayEl.style.backgroundColor = '#000';
+                } else if (g.mainBgType === 'video' && g.mainVidUrl && mainVidEl) {
+                    const vidUrl = g.mainVidUrl.startsWith('http') ? g.mainVidUrl : (location.origin + (g.mainVidUrl.startsWith('/') ? '' : '/') + g.mainVidUrl);
+                    if (mainVidEl.src !== vidUrl && !mainVidEl.src.endsWith(g.mainVidUrl)) {
+                        mainVidEl.src = vidUrl;
+                    }
+                    mainVidEl.muted = true;
+                    mainVidEl.loop = true;
+                    mainVidEl.playsInline = true;
+                    mainVidEl.style.opacity = mainOp;
+                    mainVidEl.style.display = 'block';
+                    mainVidEl.play().catch(() => {});
+                    displayEl.style.backgroundColor = '#000';
+                } else {
+                    if (mainVidEl) {
+                        mainVidEl.pause();
+                        mainVidEl.style.display = 'none';
+                    }
+                    displayEl.style.backgroundColor = 'transparent';
+                }
+
+                const mainBlur = Math.max(0, Number(g.mainBgBlur) || 0);
+                if (mainImgEl) mainImgEl.style.filter = mainBlur ? `blur(${mainBlur}px)` : '';
+                if (mainVidEl) {
+                    mainVidEl.style.filter = mainBlur ? `blur(${mainBlur}px)` : '';
+                    mainVidEl.style.transform = mainBlur ? 'scale(1.08)' : '';
+                }
+
+                // ── MINI BACKGROUND (wraps ONLY the verse!) ──────────
+                if (miniBgEl) {
+                    const show = g.miniBgShow !== false && (
+                        g.miniBgType === 'color' ||
+                        g.miniBgType === 'gradient' ||
+                        (g.miniBgType === 'image' && Boolean(g.bgImageUrl)) ||
+                        (g.miniBgType === 'video' && Boolean(g.bgVideoUrl)) ||
+                        Boolean(g.miniBgColor)
+                    );
+                    miniBgEl.style.display = show ? 'block' : 'none';
+
+                    miniBgEl.style.background = '';
+                    miniBgEl.style.backgroundColor = '';
+                    miniBgEl.style.opacity = '1';
+                    if (miniImgEl) miniImgEl.style.display = 'none';
+                    if (miniVidEl) {
+                        miniVidEl.pause();
+                        miniVidEl.style.display = 'none';
+                    }
+
+                    if (!show && innerEl) {
+                        innerEl.style.background = 'transparent';
+                        innerEl.style.boxShadow = 'none';
+                        innerEl.style.backdropFilter = '';
+                        innerEl.style.webkitBackdropFilter = '';
+                    }
+
+                    const miniOp = (g.miniBgOpacity ?? 85) / 100;
+
+                    if (g.miniBgType === 'gradient') {
+                        const c1 = g.gradColor1 || '#1a1a2e', c2 = g.gradColor2 || '#16213e', c3 = g.gradColor3 || '#0f3460';
+                        miniBgEl.style.background = `linear-gradient(${g.gradAngle ?? 135}deg, ${c1}, ${c2}, ${c3})`;
+                        miniBgEl.style.opacity = miniOp;
+                    } else if (g.miniBgType === 'image' && g.bgImageUrl && miniImgEl) {
+                        miniImgEl.src = g.bgImageUrl;
+                        miniImgEl.style.objectFit = g.imgFit || 'cover';
+                        miniImgEl.style.display = 'block';
+                        miniImgEl.style.opacity = miniOp;
+                        miniBgEl.style.background = 'transparent';
+                    } else if (g.miniBgType === 'video' && g.bgVideoUrl && miniVidEl) {
+                        const vidUrl = g.bgVideoUrl.startsWith('http') ? g.bgVideoUrl : (location.origin + (g.bgVideoUrl.startsWith('/') ? '' : '/') + g.bgVideoUrl);
+                        if (miniVidEl.src !== vidUrl && !miniVidEl.src.endsWith(g.bgVideoUrl)) {
+                            miniVidEl.src = vidUrl;
+                        }
+                        miniVidEl.muted = true;
+                        miniVidEl.loop = true;
+                        miniVidEl.playsInline = true;
+                        miniVidEl.style.display = 'block';
+                        miniVidEl.style.opacity = miniOp;
+                        miniVidEl.play().catch(() => {});
+                        miniBgEl.style.background = 'transparent';
+                        miniBgEl.style.opacity = '1';
+                    } else {
+                        // Translucent solid color so backdrop-filter can shine through
+                        miniBgEl.style.backgroundColor = hexToRgba(g.miniBgColor || '#141e2d', miniOp);
+                        miniBgEl.style.opacity = '1';
+                    }
+
+                    const blurPx = Number(g.miniBgBlur) || 0;
+                    if (blurPx > 0 && show) {
+                        // 1. Frosted glass backdrop blur on container
+                        if (innerEl) {
+                            innerEl.style.backdropFilter = `blur(${blurPx}px)`;
+                            innerEl.style.webkitBackdropFilter = `blur(${blurPx}px)`;
+                        }
+                        miniBgEl.style.backdropFilter = `blur(${blurPx}px)`;
+                        miniBgEl.style.webkitBackdropFilter = `blur(${blurPx}px)`;
+
+                        // 2. Blur on image/video
+                        if (miniImgEl && g.miniBgType === 'image') {
+                            miniImgEl.style.filter = `blur(${blurPx}px)`;
+                            miniImgEl.style.transform = 'scale(1.08)';
+                        }
+                        if (miniVidEl && g.miniBgType === 'video') {
+                            miniVidEl.style.filter = `blur(${blurPx}px)`;
+                            miniVidEl.style.transform = 'scale(1.08)';
+                        }
+                    } else {
+                        if (innerEl) {
+                            innerEl.style.backdropFilter = '';
+                            innerEl.style.webkitBackdropFilter = '';
+                        }
+                        miniBgEl.style.backdropFilter = '';
+                        miniBgEl.style.webkitBackdropFilter = '';
+                        if (miniImgEl) {
+                            miniImgEl.style.filter = '';
+                            miniImgEl.style.transform = '';
+                        }
+                        if (miniVidEl) {
+                            miniVidEl.style.filter = '';
+                            miniVidEl.style.transform = '';
+                        }
+                    }
+
+                    const rad = (g.miniBgRadius ?? 18) + 'px';
+                    miniBgEl.style.borderRadius = rad;
+                    if (innerEl) {
+                        innerEl.style.borderRadius = rad;
+                        const padY = Number(g.miniPaddingY ?? 26);
+                        const padX = Number(g.miniPaddingX ?? 40);
+                        innerEl.style.padding = `${padY}px ${padX}px`;
+                    }
+                }
+            }
+
+            function renderSong(data) {
+                const pageText = data?.pageText || '';
+                const title = data?.title || 'Song Title';
+                const subtitle = data?.subtitle || data?.song?.subtitle || '';
+                const songNumber = data?.songNumber || (data?.song?.id ? String(data.song.id).padStart(2, '0') : '01');
+                const isTitleSlide = Boolean(data?.isTitleSlide);
+                const shouldShow = Boolean(data?.isVisible && pageText);
+                isLyricsVisible = shouldShow;
+
+                if (headerEl) headerEl.style.display = isTitleSlide ? 'none' : 'inline-flex';
+                if (titleEl) titleEl.textContent = title;
+                if (subtitleEl) {
+                    subtitleEl.textContent = subtitle;
+                    subtitleEl.style.display = subtitle ? 'block' : 'none';
+                }
+                if (badgeEl) badgeEl.textContent = songNumber;
+
+                lyricsEl.classList.toggle('title_slide', isTitleSlide);
+                if (isTitleSlide) {
+                    const [mainTitle = '', ...subtitleLines] = pageText.split('\n');
+                    lyricsEl.replaceChildren();
+                    const titleLine = document.createElement('span');
+                    titleLine.className = 'title_slide_main';
+                    titleLine.textContent = mainTitle;
+                    lyricsEl.append(titleLine);
+                    const subtitleText = subtitleLines.join('\n').trim();
+                    if (subtitleText) {
+                        const subtitleLine = document.createElement('span');
+                        subtitleLine.className = 'title_slide_subtitle';
+                        subtitleLine.textContent = subtitleText;
+                        lyricsEl.append(subtitleLine);
+                    }
+                } else {
+                    lyricsEl.innerHTML = (pageText || 'No lyrics selected')
+                        .split('\n')
+                        .map(line => `<span class="line">${line || '&nbsp;'}</span>`)
+                        .join('');
+                }
+
+                if (data.properties) {
+                    applyGraphicProps(data.properties);
+                } else {
+                    applyGraphicProps();
+                }
+
+                displayEl.style.display = shouldShow ? 'flex' : 'none';
+            }
+
+            // Load saved properties if available
+            try {
+                const saved = localStorage.getItem('lyrics_properties');
+                if (saved) applyGraphicProps(JSON.parse(saved));
+            } catch (e) {}
+
+            socket.on('receiveData', (payload) => {
+                if (payload?.type !== 'lyrics') return;
+                renderSong(payload.data || {});
+            });
+
+            socket.on('receiveConfig', (res) => {
+                if (res && res.type === 'lyrics_properties' && res.properties) {
+                    applyGraphicProps(res.properties);
+                }
+            });
+        </script>
+    </body>
+</html>

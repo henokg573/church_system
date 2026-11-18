@@ -1,0 +1,287 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    --background_color: #333;
+    --primary_color: #ffffff;
+    --secondary_color: #2e2e2e;
+    --button_color: #555;
+    --button_hover_color: #777;
+    --selected_item_color: #ffcc00;
+    --active_item_color: #ff1e00;
+}
+body{
+    position: relative;
+    margin: 0;
+    padding:0;
+    width: 100%;
+    height: 100vh;
+    background-color: var(--background_color);
+    color: var(--primary_color);
+    display: flex;
+}
+.title_bar{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1rem;
+    background-color: var(--button_color);
+    height: 2rem;
+    z-index: 10;
+}
+.media_player_container{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: calc(100vh - 2rem);
+    margin-top: 2rem;
+    background-color: var(--selected_item_color);
+    gap: 0.5rem;
+    
+}
+.file_explorer{
+    position: relative;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    background-color: var(--secondary_color);
+    overflow-y: auto;
+    gap: 1rem;
+    justify-content: center;
+    align-items: center;
+}
+.media_control_btn{
+    position:absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    height: 6rem;
+    display: flex;
+    margin-bottom: 2rem;
+    justify-content: space-evenly;
+    align-items: center;
+    border-radius: 1rem;
+    background-color: var(--button_color);
+    z-index: 10;
+}
+.media_btn{
+    position: relative;
+    width: 4rem;
+    height: 4rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    background-color: var(--button_color);
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s, transform 0.3s ease-in-out;
+}
+.media_btn:hover{
+    transform: scale(1.1);
+    background-color: var(--button_hover_color);
+    transition: 0.2s ease-in-out;
+}
+.media_btn img{
+    width: 100%;
+    height: 100%;
+    filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(39deg) brightness(104%) contrast(102%);
+    object-fit: cover;
+}
+
+.add_btn{
+    position: absolute;
+    bottom: 3rem;
+    right: 3rem;
+    width: 4rem;
+    height: 4rem;
+    font-size: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    background-color: var(--button_color);
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s, transform 0.3s ease-in-out;
+}
+.add_btn:hover{
+    transform: scale(1.1);
+    background-color: var(--button_hover_color);
+    transition: 0.2s ease-in-out;
+}
+
+.previous_btn{
+    transform: rotate(180deg);
+}
+.previous_btn:hover{
+    transform: rotate(180deg) scale(1.1);
+    background-color: var(--button_hover_color);
+    transition: 0.2s ease-in-out;
+}
+
+/* file explorer */
+.file_container{
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    width:100%;
+    padding: 1rem;
+    height:max-content;
+    gap: 1rem;
+    background-color: var(--secondary_color);
+    overflow-y: auto;
+}
+.file_item{
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 10rem;
+    height: 10rem;
+    background-color: #fff;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: transform 0.5s, box-shadow 0.5s;
+}
+.file_item:hover{
+    transform: scale(1.05);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    background-color: var(--active_color);
+    color:#fff;
+    transition: 0.2s ease-in-out;
+}
+.file_name{
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+    background-color: rgba(0,0,0,0.5);
+    color: #fff;
+    padding: 0.5rem 0;
+    font-size: 1rem;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+.media_item{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3rem;
+    height: 3rem;
+    object-fit: cover;
+}
+.media_item.video_item{
+    object-fit: cover;
+    background-image: url('../icon/video_icon.png');
+    background-size: cover;
+    background-position: center;
+}
+
+.media_item.image_item{
+    object-fit: cover;
+    background-image: url('../icon/Image_icon.png');
+    background-size: cover;
+    background-position: center;
+}
+
+
+
+/* for mobile */
+@media (max-width: 768px) {
+    .media_player_container{
+        height: calc(100vh - 2rem);
+    }
+    .media_btn{
+        width: 3rem;
+        height: 3rem;
+    }
+    .add_btn{
+        bottom: 2.5rem;
+        right: 1.5rem;
+        width: 3rem;
+        height: 3rem;
+    }
+    .media_control_btn{
+        height: 4rem;
+    }
+}
+
+@media (max-width: 600px) {
+    body {
+        height: 100vh;
+        height: 100dvh;
+        min-height: 0;
+        overflow: hidden;
+    }
+
+    .title_bar {
+        height: 2.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 0 12px;
+        font-size: 0.92rem;
+    }
+
+    .media_player_container {
+        height: calc(100dvh - 2.5rem);
+        margin-top: 2.5rem;
+        gap: 0;
+    }
+
+    .file_explorer {
+        align-items: flex-start;
+        padding-bottom: 86px;
+    }
+
+    .file_container {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        align-content: start;
+        justify-content: stretch;
+        gap: 10px;
+        padding: 12px;
+    }
+
+    .file_item {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 1;
+        min-width: 0;
+    }
+
+    .media_control_btn {
+        position: fixed;
+        bottom: max(10px, env(safe-area-inset-bottom));
+        left: 12px;
+        transform: none;
+        width: calc(100% - 24px);
+        height: 58px;
+        margin: 0;
+        border-radius: 14px;
+    }
+
+    .media_btn {
+        width: 42px;
+        height: 42px;
+    }
+
+    .add_btn {
+        position: fixed;
+        right: 16px;
+        bottom: calc(82px + env(safe-area-inset-bottom));
+        width: 44px;
+        height: 44px;
+        border: 1px solid rgba(255,255,255,0.12);
+        font-size: 1.5rem;
+    }
+}

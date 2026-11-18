@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Presenter Display</title>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      overflow: hidden;
+    }
+
+    #slide_container {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #slide_frame {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    #idle_screen {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(160deg, #102a43, #071521);
+      color: #e8eef4;
+      font-family: Georgia, serif;
+      text-align: center;
+    }
+
+    #idle_screen h1 {
+      font-size: 3.5rem;
+      margin: 0 0 .5rem;
+    }
+
+    #idle_screen p {
+      color: #9fb6c6;
+      font-size: 1.4rem;
+      margin: 0;
+    }
+
+    #notes_overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(7, 21, 33, .85);
+      color: #e8eef4;
+      font-family: "Segoe UI", sans-serif;
+      font-size: 1.4rem;
+      padding: 18px 32px;
+      z-index: 4;
+      white-space: pre-wrap;
+    }
+
+    #notes_overlay.hidden {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="idle_screen">
+    <h1>Presenter Display</h1>
+    <p>Waiting for the preacher to go live…</p>
+  </div>
+  <div id="slide_container" style="display:none">
+    <iframe id="slide_frame" src="about:blank"></iframe>
+  </div>
+  <div id="notes_overlay" class="hidden"></div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    const idleScreen = document.getElementById("idle_screen");
+    const slideContainer = document.getElementById("slide_container");
+    const slideFrame = document.getElementById("slide_frame");
+    const notesOverlay = document.getElementById("notes_overlay");
+
+    socket.on("presenter_state", state => {
+      const active = state && state.active;
+      if (state && state.isLive && active) {
+        idleScreen.style.display = "none";
+        slideContainer.style.display = "flex";
+        // The viewer inside the iframe follows presenter_state itself and
+        // flips pages instantly from its page cache.
+        const wanted = `/plugin/presenter/viewer.html?url=${encodeURIComponent(active.url)}`;
+        if (slideFrame.dataset.doc !== active.url) {
+          slideFrame.src = `${wanted}&page=${active.currentPage || 1}`;
+          slideFrame.dataset.doc = active.url;
+        }
+        notesOverlay.classList.toggle("hidden", !(state.showNotes && state.notes));
+        notesOverlay.textContent = state.showNotes ? (state.notes || "") : "";
+      } else {
+        // End pressed: hide the slides but keep the page itself open.
+        idleScreen.style.display = "flex";
+        slideContainer.style.display = "none";
+      }
+    });
+  </script>
+</body>
+
+</html>

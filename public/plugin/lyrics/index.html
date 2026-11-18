@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Lyrics Control</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.css" integrity="sha384-Bk5cbLkZQ5raZ0+H2/+VbfYx3WpvxvQK4zqXZr7sYODuaX7bKXoSOnipQxkaS8sv" crossorigin="anonymous">
+        <link rel="stylesheet" href="css/style.css?v=1.1">
+        <link rel="stylesheet" href="/css/presentation-nav.css">
+    </head>
+    <body data-mobile-view="songs">
+        <nav class="plugin_nav" aria-label="Plugin navigation">
+            <a href="/" aria-label="Main page"><i class="bi bi-house-door"></i> Home</a>
+            <a href="/plugin/presenter/dashboard.html" aria-label="Preacher Dashboard for PPT and PDF"><i class="bi bi-easel2"></i> Preacher Dashboard</a>
+            <a href="/plugin/presenter/" aria-label="Presenter Control"><i class="bi bi-sliders"></i> Presenter Control</a>
+            <a href="/plugin/bible/" aria-label="Bible plugin"><i class="bi bi-book"></i> Bible</a>
+            <a href="/plugin/lyrics/" class="active" aria-label="Lyrics plugin"><i class="bi bi-music-note-beamed"></i> Lyrics</a>
+            <a href="/plugin/timer/" aria-label="Timer plugin"><i class="bi bi-stopwatch"></i> Timer</a>
+            <a href="/plugin/live_graphics/" aria-label="Live Graphics plugin"><i class="bi bi-broadcast"></i> Live Graphics</a>
+            <button type="button" class="presentation_extend" data-presentation-open aria-label="Extend Screen 01 presentation to another monitor"><i class="bi bi-arrows-fullscreen" aria-hidden="true"></i> Extend</button>
+        </nav>
+        <header class="mobile_lyrics_header">
+            <details class="mobile_system_menu">
+                <summary aria-label="Open system menu"><i class="bi bi-list" aria-hidden="true"></i><span>Menu</span></summary>
+                <div class="mobile_system_menu_panel">
+                    <a href="/"><i class="bi bi-house-door" aria-hidden="true"></i> Home</a>
+                    <a href="/plugin/bible/"><i class="bi bi-book" aria-hidden="true"></i> Bible</a>
+                    <a href="/plugin/lyrics/"><i class="bi bi-music-note-beamed" aria-hidden="true"></i> Lyrics</a>
+                    <a href="/plugin/timer/"><i class="bi bi-stopwatch" aria-hidden="true"></i> Timer</a>
+                    <a href="/plugin/live_graphics/"><i class="bi bi-broadcast" aria-hidden="true"></i> Live Graphics</a>
+                    <a href="/plugin/presenter/dashboard.html"><i class="bi bi-easel2" aria-hidden="true"></i> Preacher Dashboard</a>
+                    <a href="/plugin/presenter/"><i class="bi bi-sliders" aria-hidden="true"></i> Presenter Control</a>
+                </div>
+            </details>
+            <div class="mobile_lyrics_brand"><i class="bi bi-music-note-beamed" aria-hidden="true"></i><span>Lyrics</span></div>
+        </header>
+        <div class="lyrics_app">
+            <aside class="panel sidebar">
+                <div class="import_bar">
+                    <div class="import_actions">
+                        <button type="button" id="btn_add_menu" class="import_btn" aria-label="Add or create" title="Add / Create"><i class="bi bi-plus-lg" aria-hidden="true"></i></button>
+                        <button type="button" id="btn_import_excel" class="import_btn" aria-label="Import" title="Import"><i class="bi bi-file-earmark-arrow-up" aria-hidden="true"></i></button>
+                        <button type="button" id="btn_export_playlist" class="import_btn" aria-label="Export playlist" title="Export playlist"><i class="bi bi-file-earmark-arrow-down" aria-hidden="true"></i></button>
+                        <button type="button" id="btn_edit_songs" class="import_btn" aria-label="Edit songs" title="Edit"><i class="bi bi-pencil-square" aria-hidden="true"></i></button>
+                        <button type="button" id="btn_delete_songs" class="import_btn danger_import_btn" aria-label="Delete songs" title="Delete"><i class="bi bi-trash3" aria-hidden="true"></i></button>
+                    </div>
+                    <div class="delete_playlist_actions" id="delete_playlist_actions" hidden>
+                        <button type="button" id="btn_delete_playlist_songs" class="delete_playlist_button">
+                            <i class="bi bi-trash3"></i> Delete all songs in this playlist
+                        </button>
+                    </div>
+                    <div id="add_menu" class="add_menu" hidden>
+                        <button type="button" id="btn_add_playlist"><i class="bi bi-music-note-list"></i> Add Playlist</button>
+                        <button type="button" id="btn_add_song"><i class="bi bi-file-earmark-music"></i> Add Song</button>
+                        <button type="button" id="btn_add_song_mix"><i class="bi bi-music-note-list"></i> Create Song Mix</button>
+                    </div>
+                </div>
+
+                <div class="toolbar">
+                    <select id="song_source" class="control">
+                        <option value="hymnal">ሃይማኖት / Local Songs</option>
+                        <option value="localSongs">Local Songs</option>
+                    </select>
+                    <select id="song_sort" class="control sort_control">
+                        <option value="order">As Ordered</option>
+                        <option value="alpha">Alphabetical</option>
+                    </select>
+                    <input id="song_search" type="search" class="control" placeholder="Search Song (title or lyrics)">
+                </div>
+
+                <p id="song_order_hint" class="song_order_hint" hidden>Drag songs to change playlist order. Clear search and choose “As Ordered” to reorder the full playlist.</p>
+                <div id="song_list" class="song_list"></div>
+            </aside>
+
+            <main class="panel content_panel">
+                <div class="preview_grid">
+                    <div class="preview_card">
+                        <div class="preview_header">Now</div>
+                        <iframe id="preview_now_frame" src="preview/now.html" title="Now preview"></iframe>
+                    </div>
+
+                    <div class="preview_card">
+                        <div class="preview_header">Next</div>
+                        <iframe id="preview_next_frame" src="preview/next.html" title="Next preview"></iframe>
+                    </div>
+                </div>
+
+                <div class="current_wrap">
+                    <div class="current_header">
+                        <div class="current_text_wrap">
+                            <span class="label">Current</span>
+                            <div id="song_title" class="song_title">No song selected</div>
+                            <div id="song_subtitle" class="song_subtitle" hidden></div>
+                        </div>
+                        <div id="page_counter" class="page_counter">0 / 0</div>
+                    </div>
+
+                    <div id="lyric_text" class="lyric_text"></div>
+                </div>
+
+                <div class="nav_buttons">
+                    <button id="btn_prev" type="button" class="control_btn"><i class="bi bi-arrow-left"></i> Prev</button>
+                    <button id="btn_show" type="button" class="control_btn active"><i class="bi bi-eye-fill"></i> Hide</button>
+                    <button id="btn_sync" type="button" class="control_btn active sync_btn" title="Toggle synchronization across devices. When active, slides sync live. When off, this device functions independently.">
+                        <span class="sync_pulse"></span>
+                        <i class="bi bi-broadcast"></i> <span id="sync_btn_label">Sync: On</span>
+                    </button>
+                    <button id="btn_next" type="button" class="control_btn">Next <i class="bi bi-arrow-right"></i></button>
+                </div>
+            </main>
+
+            <!-- Right Panel with Tabs: Search, Property, Settings -->
+            <aside class="panel right_panel">
+                <!-- Tab Navigation Bar -->
+                <div class="tab_bar">
+                    <button type="button" class="tab_btn active" data-tab="search" id="tab_btn_search">
+                        <i class="bi bi-search"></i> Search
+                    </button>
+                    <button type="button" class="tab_btn" data-tab="property" id="tab_btn_property">
+                        <i class="bi bi-sliders"></i> Property
+                    </button>
+                    <button type="button" class="tab_btn" data-tab="settings" id="tab_btn_settings">
+                        <i class="bi bi-gear"></i> Settings
+                    </button>
+                </div>
+
+                <!-- 1. Search Tab Content -->
+                <div class="tab_content active" id="tab_search">
+                    <div class="tab_inner">
+                        <div class="property_group">
+                            <label class="property_label">Playlist</label>
+                            <div class="property_field property_text_field">
+                                <input id="playlist_name" type="text" value="Local Songs" class="property_input">
+                            </div>
+
+                            <label class="property_label">Search Song & Lyrics</label>
+                            <div class="property_field property_text_field">
+                                <input id="playlist_search" type="search" class="property_input" placeholder="Search title or inside song lyrics…">
+                            </div>
+
+                            <div class="search_scope_row">
+                                <label class="scope_label" title="When checked, search scans both song title and full verses/lyrics text">
+                                    <input type="checkbox" id="search_in_lyrics" checked>
+                                    <span>Search inside lyrics</span>
+                                </label>
+                            </div>
+
+                            <div id="search_results_header" style="font-size:0.75rem; color:var(--muted); margin-top:0.1rem; display:none;"></div>
+                            <div id="playlist_results" class="playlist_results"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Property Tab Content -->
+                <div class="tab_content" id="tab_property">
+                    <div class="tab_inner">
+                        <div class="property_group">
+                            <!-- Rename Playlist -->
+                            <label class="property_label">Playlist</label>
+                            <div class="property_field property_text_field">
+                                <input id="prop_rename_playlist_input" type="text" value="Local Songs" class="property_input" placeholder="Playlist Name">
+                            </div>
+                            <button type="button" id="btn_rename_playlist" class="setting_btn rename_btn">
+                                <i class="bi bi-pencil-square"></i> Rename Playlist
+                            </button>
+
+                            <!-- Rename Song -->
+                            <label class="property_label" style="margin-top:0.6rem;">Selected Song</label>
+                            <div class="property_field property_text_field">
+                                <input id="prop_rename_song_title" type="text" class="property_input" placeholder="Song Title">
+                            </div>
+                            <div class="property_field property_text_field">
+                                <input id="prop_rename_song_subtitle" type="text" class="property_input" placeholder="Subtitle / Origin">
+                            </div>
+                            <button type="button" id="btn_rename_song" class="setting_btn rename_btn">
+                                <i class="bi bi-pencil"></i> Rename Song
+                            </button>
+
+                            <label class="property_label" style="margin-top:0.6rem;">Text Styling</label>
+                            <div class="property_field">
+                                <span>Font Size</span>
+                                <input type="range" id="prop_font_size" min="14" max="120" value="50">
+                            </div>
+                            <div class="property_field">
+                                <span>Font Color</span>
+                                <input type="color" id="prop_font_color" value="#000000">
+                            </div>
+                            <div class="property_field">
+                                <span>Title Color</span>
+                                <input type="color" id="prop_title_color" value="#000000">
+                            </div>
+                            <div class="property_field">
+                                <span>Choruses Color</span>
+                                <input type="color" id="prop_chorus_color" value="#000000">
+                            </div>
+
+                            <!-- ── Main Background ── -->
+                            <label class="property_label" style="margin-top:0.8rem;"><i class="bi bi-display"></i> Main Background</label>
+                            <div class="property_field">
+                                <span>Type</span>
+                                <select id="main_bg_type" class="property_input setting_select">
+                                    <option value="none">None</option>
+                                    <option value="color">Solid Color</option>
+                                    <option value="gradient" selected>Gradient</option>
+                                    <option value="image">Image</option>
+                                    <option value="video">Video</option>
+                                </select>
+                            </div>
+
+                            <!-- Solid Color -->
+                            <div id="main_section_color" class="section-hidden">
+                                <div class="property_field">
+                                    <span>Color</span>
+                                    <input type="color" id="main_bg_color" value="#0d1320">
+                                </div>
+                            </div>
+
+                            <!-- Gradient -->
+                            <div id="main_section_gradient">
+                                <div class="property_field">
+                                    <span>Colors</span>
+                                    <div class="gradient-stops">
+                                        <input type="color" id="main_grad_c1" value="#0d1320">
+                                        <input type="color" id="main_grad_c2" value="#182235">
+                                        <input type="color" id="main_grad_c3" value="#0f172a">
+                                    </div>
+                                </div>
+                                <div class="property_field">
+                                    <span>Angle</span>
+                                    <div class="prop_field_range">
+                                        <input type="range" id="main_grad_angle" min="0" max="360" value="135">
+                                        <span class="val-badge" id="main_grad_angle_val">135deg</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Image -->
+                            <div id="main_section_image" class="section-hidden">
+                                <div class="property_field">
+                                    <span>Source</span>
+                                    <div class="prop_file_input_wrap">
+                                        <input type="text" id="main_img_url" class="property_input" placeholder="URL or pick file" readonly>
+                                        <button type="button" class="btn-pick" id="btn_main_img_pick" title="Open Media Library"><i class="bi bi-folder2-open"></i></button>
+                                    </div>
+                                </div>
+                                <div class="property_field">
+                                    <span>Fit</span>
+                                    <select id="main_img_fit" class="property_input setting_select">
+                                        <option value="cover" selected>Cover</option>
+                                        <option value="contain">Contain</option>
+                                        <option value="fill">Fill</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Video -->
+                            <div id="main_section_video" class="section-hidden">
+                                <div class="property_field">
+                                    <span>Source</span>
+                                    <div class="prop_file_input_wrap">
+                                        <input type="text" id="main_vid_url" class="property_input" placeholder="URL or pick file" readonly>
+                                        <button type="button" class="btn-pick" id="btn_main_vid_pick" title="Open Media Library"><i class="bi bi-folder2-open"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="property_field">
+                                <span>Opacity</span>
+                                <div class="prop_field_range">
+                                    <input type="range" id="main_bg_opacity" min="0" max="100" value="100">
+                                    <span class="val-badge" id="main_bg_opacity_val">100%</span>
+                                </div>
+                            </div>
+                            <div class="property_field">
+                                <span>Main Blur</span>
+                                <div class="prop_field_range">
+                                    <input type="range" id="main_bg_blur" min="0" max="40" value="0">
+                                    <span class="val-badge" id="main_bg_blur_val">0px</span>
+                                </div>
+                            </div>
+
+                            <!-- ── Mini Background ── -->
+                            <label class="property_label" style="margin-top:0.8rem;"><i class="bi bi-square-half"></i> Mini Background</label>
+                            <div class="property_field">
+                                <span>Enable</span>
+                                <input type="checkbox" id="mini_bg_show" checked>
+                            </div>
+                            <div class="property_field">
+                                <span>Type</span>
+                                <select id="mini_bg_type" class="property_input setting_select">
+                                    <option value="color" selected>Solid Color</option>
+                                    <option value="gradient">Gradient</option>
+                                    <option value="image">Image</option>
+                                    <option value="video">Video</option>
+                                </select>
+                            </div>
+
+                            <!-- Mini Solid Color -->
+                            <div id="section_color">
+                                <div class="property_field">
+                                    <span>Color</span>
+                                    <input type="color" id="mini_bg_color" value="#141e2d">
+                                </div>
+                                <div class="property_field">
+                                    <span>Opacity</span>
+                                    <div class="prop_field_range">
+                                        <input type="range" id="mini_bg_opacity" min="0" max="100" value="85">
+                                        <span class="val-badge" id="mini_bg_opacity_val">85%</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Mini Gradient -->
+                            <div id="section_gradient" class="section-hidden">
+                                <div class="property_field">
+                                    <span>Colors</span>
+                                    <div class="gradient-stops">
+                                        <input type="color" id="grad_color1" value="#1a1a2e">
+                                        <input type="color" id="grad_color2" value="#16213e">
+                                        <input type="color" id="grad_color3" value="#0f3460">
+                                    </div>
+                                </div>
+                                <div class="property_field">
+                                    <span>Angle</span>
+                                    <div class="prop_field_range">
+                                        <input type="range" id="grad_angle" min="0" max="360" value="135">
+                                        <span class="val-badge" id="grad_angle_val">135deg</span>
+                                    </div>
+                                </div>
+                                <div class="property_field">
+                                    <span>Opacity</span>
+                                    <div class="prop_field_range">
+                                        <input type="range" id="mini_bg_opacity_grad" min="0" max="100" value="85">
+                                        <span class="val-badge" id="mini_bg_opacity_grad_val">85%</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Mini Image -->
+                            <div id="section_image" class="section-hidden">
+                                <div class="property_field">
+                                    <span>Source</span>
+                                    <div class="prop_file_input_wrap">
+                                        <input type="text" id="bg_image_url" class="property_input" placeholder="URL or pick file" readonly>
+                                        <button type="button" class="btn-pick" id="btn_mini_img_pick" title="Open Media Library"><i class="bi bi-folder2-open"></i></button>
+                                    </div>
+                                </div>
+                                <div class="property_field">
+                                    <span>Fit</span>
+                                    <select id="img_fit" class="property_input setting_select">
+                                        <option value="cover" selected>Cover</option>
+                                        <option value="contain">Contain</option>
+                                        <option value="fill">Fill</option>
+                                    </select>
+                                </div>
+                                <div class="property_field">
+                                    <span>Opacity</span>
+                                    <div class="prop_field_range">
+                                        <input type="range" id="mini_bg_opacity_img" min="0" max="100" value="85">
+                                        <span class="val-badge" id="mini_bg_opacity_img_val">85%</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Mini Video -->
+                            <div id="section_video" class="section-hidden">
+                                <div class="property_field">
+                                    <span>Source</span>
+                                    <div class="prop_file_input_wrap">
+                                        <input type="text" id="bg_video_url" class="property_input" placeholder="URL or pick file" readonly>
+                                        <button type="button" class="btn-pick" id="btn_mini_vid_pick" title="Open Media Library"><i class="bi bi-folder2-open"></i></button>
+                                    </div>
+                                </div>
+                                <div class="property_field">
+                                    <span>Opacity</span>
+                                    <div class="prop_field_range">
+                                        <input type="range" id="mini_bg_opacity_vid" min="0" max="100" value="85">
+                                        <span class="val-badge" id="mini_bg_opacity_vid_val">85%</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Mini Radius & Blur -->
+                            <div class="property_field">
+                                <span>Radius</span>
+                                <div class="prop_field_range">
+                                    <input type="range" id="mini_bg_radius" min="0" max="50" value="18">
+                                    <span class="val-badge" id="mini_bg_radius_val">18px</span>
+                                </div>
+                            </div>
+                            <div class="property_field">
+                                <span>Mini Blur</span>
+                                <div class="prop_field_range">
+                                    <input type="range" id="mini_bg_blur" min="0" max="40" value="0">
+                                    <span class="val-badge" id="mini_bg_blur_val">0px</span>
+                                </div>
+                            </div>
+
+                            <!-- Mini Padding -->
+                            <div class="property_field">
+                                <span>Horizontal Padding</span>
+                                <div class="prop_field_range">
+                                    <input type="range" id="mini_padding_x" min="0" max="140" value="40">
+                                    <span class="val-badge" id="mini_padding_x_val">40px</span>
+                                </div>
+                            </div>
+                            <div class="property_field">
+                                <span>Vertical Padding</span>
+                                <div class="prop_field_range">
+                                    <input type="range" id="mini_padding_y" min="0" max="100" value="26">
+                                    <span class="val-badge" id="mini_padding_y_val">26px</span>
+                                </div>
+                            </div>
+
+                            <label class="property_label" style="margin-top:0.8rem;">Stage Monitor</label>
+                            <div class="property_field">
+                                <span>Monitor Font Size</span>
+                                <input type="range" id="prop_monitor_font_size" min="14" max="120" value="50">
+                            </div>
+                            <div class="property_field radio_row">
+                                <span>Monitor type</span>
+                                <label class="radio_item"><input type="radio" name="monitor_type" value="one" checked> one</label>
+                                <label class="radio_item"><input type="radio" name="monitor_type" value="two"> two</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Settings Tab Content -->
+                <div class="tab_content" id="tab_settings">
+                    <div class="tab_inner">
+                        <div class="property_group">
+                            <label class="property_label">Automation & Display</label>
+                            <div class="property_field">
+                                <span>Control Sync across devices</span>
+                                <input type="checkbox" id="setting_control_sync" checked>
+                            </div>
+                            <div class="property_field">
+                                <span>Auto-advance slides</span>
+                                <input type="checkbox" id="setting_auto_advance">
+                            </div>
+                            <div class="property_field">
+                                <span>Advance delay (seconds)</span>
+                                <input type="number" id="setting_advance_delay" min="1" max="60" value="5" class="property_input setting_number">
+                            </div>
+
+                            <label class="property_label" style="margin-top:0.6rem;">Background & Appearance</label>
+                            <div class="property_field">
+                                <span>Preview BG Color</span>
+                                <input type="color" id="setting_bg_color" value="#f7f3ec">
+                            </div>
+
+                            <label class="property_label" style="margin-top:0.6rem;">Output Configuration</label>
+                            <div class="property_field">
+                                <span>Target Screen</span>
+                                <select id="setting_screen" class="property_input setting_select">
+                                    <option value="primary">Primary Screen</option>
+                                    <option value="secondary">Secondary / Projector</option>
+                                </select>
+                            </div>
+                            <div class="property_field">
+                                <span>Transition Effect</span>
+                                <select id="setting_transition" class="property_input setting_select">
+                                    <option value="none">None</option>
+                                    <option value="fade">Fade</option>
+                                    <option value="slide">Slide</option>
+                                </select>
+                            </div>
+
+                            <label class="property_label" style="margin-top:0.6rem;">Library & Data</label>
+                            <div class="property_field">
+                                <span>Reload Library</span>
+                                <button type="button" id="btn_reload_songs" class="setting_btn"><i class="bi bi-arrow-clockwise"></i> Refresh</button>
+                            </div>
+                            <div class="property_field">
+                                <span>Reset Preferences</span>
+                                <button type="button" id="btn_clear_cache" class="setting_btn warning_btn"><i class="bi bi-trash3"></i> Reset</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+
+        <nav class="mobile_lyrics_nav" aria-label="Lyrics views">
+            <button type="button" data-mobile-view-button="songs" class="active" aria-current="page"><i class="bi bi-music-note-list" aria-hidden="true"></i><span>Songs</span></button>
+            <button type="button" data-mobile-view-button="current"><i class="bi bi-display" aria-hidden="true"></i><span>Current</span></button>
+            <button type="button" data-mobile-view-button="tools"><i class="bi bi-sliders" aria-hidden="true"></i><span>Tools</span></button>
+        </nav>
+
+        <!-- Song library modal: create playlist/song or import Excel rows -->
+        <div id="library_modal_overlay" class="library_modal_overlay" hidden>
+            <div class="library_modal" role="dialog" aria-modal="true" aria-labelledby="library_modal_title">
+                <div class="library_modal_header">
+                    <strong id="library_modal_title">Add Song</strong>
+                    <button type="button" id="library_modal_close" class="close-btn" aria-label="Close"><i class="bi bi-x-lg"></i></button>
+                </div>
+                <form id="playlist_form" class="library_form" hidden>
+                    <label for="new_playlist_name">Playlist name</label>
+                    <input id="new_playlist_name" class="property_input" required maxlength="100" placeholder="e.g. Sunday Worship">
+                    <button type="submit" class="setting_btn"><i class="bi bi-plus-lg"></i> Create Playlist</button>
+                </form>
+                <form id="excel_import_form" class="library_form" hidden>
+                    <label for="import_playlist">Add songs to playlist</label>
+                    <select id="import_playlist" class="property_input" required></select>
+                    <label for="excel_file">Excel, TXT, PowerPoint or PDF file</label>
+                    <input id="excel_file" type="file" class="property_input" accept=".xlsx,.xls,.csv,.txt,.pptx,.pdf,text/plain" required>
+                    <p class="import_hint">Excel files can use <code>Title</code>, <code>Subtitle</code>, and <code>Lyrics</code> columns. TXT files should have one song per block: title on the first line, singer/subtitle on the second, lyrics below, and <code>/end</code> on its own line between songs. PowerPoint (.pptx) and PDF files: each page becomes a song slide, and you can review and edit everything before saving.</p>
+                    <div id="excel_import_summary" class="import_hint" hidden></div>
+                    <button type="submit" class="setting_btn"><i class="bi bi-file-earmark-arrow-up"></i> Import Songs</button>
+                    <button type="button" id="btn_open_playlist_json_import" class="mini_btn"><i class="bi bi-collection"></i> Import Playlist JSON</button>
+                </form>
+                <form id="ppt_review_form" class="library_form" hidden>
+                    <p class="import_hint">Review the song(s) extracted from the PowerPoint file. Edit anything that looks wrong, then save.</p>
+                    <div id="ppt_review_list" class="ppt_review_list"></div>
+                    <div id="ppt_review_summary" class="import_hint" hidden></div>
+                    <button type="submit" class="setting_btn"><i class="bi bi-database-add"></i> Save Song(s) to Library</button>
+                    <button type="button" id="btn_back_to_ppt_pick" class="mini_btn"><i class="bi bi-arrow-left"></i> Choose another file</button>
+                </form>
+                <form id="playlist_json_import_form" class="library_form" hidden>
+                    <label for="playlist_json_file">Playlist JSON file</label>
+                    <input id="playlist_json_file" type="file" class="property_input" accept=".json,application/json" required>
+                    <p class="import_hint">Import a complete playlist exported from Church System. This creates a new playlist.</p>
+                    <div id="playlist_json_import_summary" class="import_hint" hidden></div>
+                    <button type="submit" class="setting_btn"><i class="bi bi-collection"></i> Import Playlist</button>
+                    <button type="button" id="btn_back_to_excel_import" class="mini_btn"><i class="bi bi-arrow-left"></i> Import songs from Excel or TXT</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- File Picker Modal (Media Library) -->
+        <div id="file_picker_overlay">
+            <div id="file_picker_modal">
+                <div id="file_picker_header">
+                    <span id="fp_title"><i class="bi bi-folder2-open"></i> Media Library</span>
+                    <button type="button" class="close-btn" id="fp_close"><i class="bi bi-x-lg"></i></button>
+                </div>
+                <div id="file_picker_toolbar">
+                    <button type="button" class="btn-pick" id="fp_upload_btn"><i class="bi bi-upload"></i> Upload</button>
+                    <input type="file" id="fp_file_input" accept="image/*,video/*" multiple>
+                    <span class="uploading-badge" id="fp_uploading"><i class="bi bi-arrow-repeat spin"></i> Uploading…</span>
+                    <select id="fp_filter" class="property_input setting_select" style="max-width:120px">
+                        <option value="all">All Files</option>
+                        <option value="image">Images</option>
+                        <option value="video">Videos</option>
+                    </select>
+                    <button type="button" class="btn-pick" id="fp_refresh_btn" title="Refresh"><i class="bi bi-arrow-clockwise"></i></button>
+                </div>
+                <div id="file_picker_grid">
+                    <div id="fp_empty">No files uploaded yet.</div>
+                </div>
+                <div id="file_picker_footer">
+                    <button type="button" class="btn-pick" id="fp_delete_btn" style="display:none; color:#ff6b6b;"><i class="bi bi-trash3"></i> Delete</button>
+                    <button type="button" class="btn-pick" id="fp_cancel_btn">Cancel</button>
+                    <button type="button" class="btn-pick" id="fp_select_btn" disabled style="background:var(--active); color:#111; font-weight:600;"><i class="bi bi-check2"></i> Select</button>
+                </div>
+            </div>
+        </div>
+
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="js/xlsx.full.min.js"></script>
+        <script src="js/jszip.min.js"></script>
+        <script src="/plugin/presenter/vendor/pdf.min.js"></script>
+        <script src="js/script.js?v=2.1"></script>
+        <script src="/js/mobile-system.js"></script>
+        <script>
+            document.querySelectorAll('[data-mobile-view-button]').forEach(button => {
+                button.addEventListener('click', () => {
+                    const view = button.dataset.mobileViewButton;
+                    document.body.dataset.mobileView = view;
+                    document.querySelectorAll('[data-mobile-view-button]').forEach(tab => {
+                        const active = tab === button;
+                        tab.classList.toggle('active', active);
+                        tab.toggleAttribute('aria-current', active);
+                    });
+                });
+            });
+        </script>
+        <script src="/js/presentation-nav.js"></script>
+    </body>
+</html>

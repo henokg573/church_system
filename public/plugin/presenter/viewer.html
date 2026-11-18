@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>PDF Viewer</title>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      overflow: hidden;
+    }
+
+    #page_canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="page_canvas"></canvas>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/plugin/presenter/vendor/pdf.min.js"></script>
+  <script>
+    pdfjsLib.GlobalWorkerOptions.workerSrc = "/plugin/presenter/vendor/pdf.worker.min.js";
+
+    const params = new URLSearchParams(location.search);
+    const fileUrl = params.get("url") || "";
+    const follow = params.get("follow") !== "0";
+    let current = parseInt(params.get("page") || "1", 10) || 1;
+
+    const canvas = document.getElementById("page_canvas");
+    const ctx = canvas.getContext("2d");
+    const cache = new Map(); // page number -> rendered offscreen canvas
+    let pdfDoc = null;
+
+    function draw(source) {
+      const vw = window.innerWidth, vh = window.innerHeight;
+      canvas.width = vw;
+      canvas.height = vh;
+      const scale = Math.min(vw / source.width, vh / source.height);
+      const w = source.width * scale, h = source.height * scale;
+      ctx.fillStyle = "#000";
+      ctx.fillRect(0, 0, vw, vh);
+      ctx.drawImage(source, (vw - w) / 2, (vh - h) / 2, w, h);
+      canvas.dataset.page = String(current);
+    }
+
+    function prefetch(page) {
+      if (!pdfDoc || page < 1 || page > pdfDoc.numPages || cache.has(page)) return;
+      pdfDoc.getPage(page).then(p => renderToCache(p, page)).catch(() => { });
+    }
+
+    async function renderToCache(page, number) {
+      const viewport = page.getViewport({ scale: 2 });
+      const off = document.createElement("canvas");
+      off.width = viewport.width;
+      off.height = viewport.height;
+      await page.render({ canvasContext: off.getContext("2d"), viewport }).promise;
+      cache.set(number, off);
+      if (cache.size > 12) {
+        const oldest = cache.keys().next().value;
+        if (oldest !== current) cache.delete(oldest);
+      }
+      return off;
+    }
+
+    async function render(number) {
+      number = Math.max(1, Number(number) || 1);
+      current = number;
+      if (!pdfDoc) return;
+      number = Math.min(pdfDoc.numPages, current);
+      current = number;
+      const cached = cache.get(number);
+      if (cached) { draw(cached); prefetch(number + 1); prefetch(number - 1); return; }
+      try {
+        const page = await pdfDoc.getPage(number);
+        const off = await renderToCache(page, number);
+        if (current === number) { draw(off); prefetch(number + 1); prefetch(number - 1); }
+      } catch (e) { console.error("render failed", e); }
+    }
+
+    async function loadDoc() {
+      if (!fileUrl) return;
+      try {
+        pdfDoc = await pdfjsLib.getDocument(fileUrl).promise;
+        await render(current);
+      } catch (e) { console.error("load failed", e); }
+    }
+
+    window.addEventListener("resize", () => {
+      const cached = cache.get(current);
+      if (cached) draw(cached);
+    });
+
+    window.addEventListener("message", (event) => {
+      if (event.data && event.data.type === "presenter_page") {
+        const page = event.data.page || 1;
+        if (page !== current) render(page);
+      }
+    });
+
+    const socket = io();
+    socket.on("presenter_state", state => {
+      if (!follow || !state || !state.active) return;
+      if (state.active.url === fileUrl) {
+        const page = state.active.currentPage || 1;
+        if (page !== current) render(page);
+      }
+    });
+
+    loadDoc();
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bible Verse</title>
+    <style>
+        :root{
+            --color-dark: #161617;
+            --color-dark2: #232323;
+            --color-light: #f4f4f4;
+            --color-accent: #484d53;
+            --color-orange: #f8993f;
+            --color-red: #ff4d4d;
+            --color-green: #33cc33;
+        }
+        @font-face {
+            font-family: 'BelaBereka';
+            src: url('../../font/BelaBereka.ttf');
+            font-weight: normal;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Agbalumo';
+            src: url('../../font/Agbalumo-Regular.ttf');
+            font-weight: normal;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Menbere';
+            src: url('../../font/Menbere-VariableFont_wght.ttf');
+            font-weight: normal;
+            font-style: normal;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body{
+            position: absolute;
+            top:0;
+            left:0;
+            width: 1920px;
+            height: 1080px;
+        }
+        .container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #video-background {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+        .bible_text_container{
+            position: absolute;
+            bottom:12%;
+            right:15%;
+            background-color: #fff;
+            border-radius: 20px;
+            border: 4px solid #fa8a3f;
+            width: 70%;
+            height: max-content;
+            padding: 2rem;
+            min-height: 10rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 1;
+            transition: all 0.5s ease-in-out;
+        }
+        .bible_text_container.hidden{
+            bottom:-20%;
+            transition: all 0.5s ease-in-out;
+        }
+        #bible_ref{
+            min-width: 10rem;
+            max-width: 25rem;
+            min-height: 2rem;
+            max-height: 4em;
+            position: absolute;
+            top:-20px;
+            right:10px;
+            padding: 10px;
+            background-color: #fa8a3f;
+            color: #fff;
+            font-family: Menbere;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #bible_text{
+            font-family: Agbalumo;
+            font-size: 2rem;
+            font-weight: normal;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="container_01">
+        <!--<video autoplay muted playsinline id="video-background" src="../../media/loop_video.mp4" loop></video>-->
+        <div class="bible_text_container hidden" id="bible_text_container">
+            <div id="bible_text">Some Text</div>
+            <div id="bible_ref">Reference</div>
+        </div>
+    </div>
+</body>
+     <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        const container = document.getElementById("container_01");
+        const bible_text = document.getElementById("bible_text");
+        const bible_ref = document.getElementById("bible_ref");
+        const bible_text_container = document.getElementById("bible_text_container");
+        const englishBooks = [
+            'Genesis','Exodus','Leviticus','Numbers','Deuteronomy','Joshua','Judges','Ruth','1 Samuel','2 Samuel',
+            '1 Kings','2 Kings','1 Chronicles','2 Chronicles','Ezra','Nehemiah','Esther','Job','Psalms','Proverbs',
+            'Ecclesiastes','Song of Solomon','Isaiah','Jeremiah','Lamentations','Ezekiel','Daniel','Hosea','Joel','Amos',
+            'Obadiah','Jonah','Micah','Nahum','Habakkuk','Zephaniah','Haggai','Zechariah','Malachi',
+            'Matthew','Mark','Luke','John','Acts','Romans','1 Corinthians','2 Corinthians','Galatians','Ephesians',
+            'Philippians','Colossians','1 Thessalonians','2 Thessalonians','1 Timothy','2 Timothy','Titus','Philemon',
+            'Hebrews','James','1 Peter','2 Peter','1 John','2 John','3 John','Jude','Revelation'
+        ];
+        const amharicBooks = [
+            'ዘፍጥረት','ዘጸአት','ዘሌዋውያን','ዘኁልቁ','ዘዳግም','ኢያሱ','መሳፍንት','ሩት','1ኛ ሳሙኤል','2ኛ ሳሙኤል',
+            '1ኛ ነገሥት','2ኛ ነገሥት','1ኛ ዜና','2ኛ ዜና','እዝራ','ነህምያ','አስቴር','ኢዮብ','መዝሙር','ምሳሌ',
+            'መክብብ','መኃልይ','ኢሳይያስ','ኤርምያስ','ሰቆቃወ ኤርምያስ','ሕዝቅኤል','ዳንኤል','ሆሴዕ','ኢዩኤል','አሞጽ',
+            'አብድዩ','ዮናስ','ሚክያስ','ናሆም','ዘካርያስ','ሶፎኒያ','ሐጌ','ዘካርያስ','ሚልክያስ',
+            'ማቴዎስ','ማርቆስ','ሉቃስ','ዮሐንስ','ሐዋርያት','ሮሜ','1ኛ ቆሮንቶስ','2ኛ ቆሮንቶስ','ገላትያ','ኤፌሶን',
+            'ፊልጵስዩስ','ቆላስይስ','1ኛ ተሰሎንቄ','2ኛ ተሰሎንቄ','1ኛ ጢሞቴዎስ','2ኛ ጢሞቴዎስ','ቲቶ','ፊልሞና',
+            'ዕብራውያን','ያዕቆብ','1ኛ ጴጥሮስ','2ኛ ጴጥሮስ','1ኛ ዮሐንስ','2ኛ ዮሐንስ','3ኛ ዮሐንስ','ይሁዳ','ራዕይ'
+        ];
+
+        socket.on("receiveData", (message) => {
+            if (message?.type === "bible" && message.data) {
+                const state = message.data;
+                const verse = state.selectedVerse;
+                if (!verse?.text) return;
+                const books = state.lang === "am" ? amharicBooks : englishBooks;
+                const bookName = books[state.selectedBook] || verse.book || "";
+                const chapter = state.selectedChapter || verse.chapter || 1;
+                const verseNumber = verse.verse ?? verse.verse_number ?? 1;
+                bible_text.textContent = verse.text;
+                bible_ref.textContent = `${bookName} ${chapter}:${verseNumber}`;
+                return;
+            }
+
+            if (message?.selected_verse_text) {
+                bible_text.textContent = message.selected_verse_text;
+                const chapter = Number(message.chapter_number);
+                const verse = Number(message.selected_number);
+                bible_ref.textContent = `${message.book_name || ""} ${Number.isFinite(chapter) ? chapter + 1 : ""}:${Number.isFinite(verse) ? verse + 1 : ""}`;
+            }
+        });
+        socket.on("receive_command", (data) => {
+            if (data?.cmd === "bible_verse_mini_in") {
+                bible_text_container.classList.remove("hidden");
+            } else if (data?.cmd === "bible_verse_mini_out") {
+                bible_text_container.classList.add("hidden");
+            }
+        });
+    </script>
+</html>

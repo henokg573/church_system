@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Lyrics Properties</title>
+        <style>
+            :root {
+                --bg-1: #070b14;
+                --bg-2: #101827;
+                --panel: rgba(15, 23, 42, 0.7);
+                --panel-strong: rgba(15, 23, 42, 0.86);
+                --border: rgba(148, 163, 184, 0.2);
+                --text: #edf6ff;
+                --muted: #a7b8d8;
+                --green: #34d399;
+                --blue: #60a5fa;
+                --orange: #f8a75a;
+                --purple: #8b5cf6;
+            }
+
+            * {
+                box-sizing: border-box;
+            }
+
+            body{
+                margin: 0;
+                padding: 0;
+                background:
+                    radial-gradient(circle at top left, rgba(96, 165, 250, 0.18), transparent 28%),
+                    radial-gradient(circle at bottom right, rgba(168, 85, 247, 0.12), transparent 26%),
+                    linear-gradient(135deg, var(--bg-1) 0%, var(--bg-2) 60%, #111827 100%);
+                color: var(--text);
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            }
+
+            .contener{
+                position: relative;
+                width: 100%;
+                height: 100%;
+                overflow-y: auto;
+                padding: 12px;
+            }
+
+            .title{
+                position: relative;
+                width: 100%;
+                text-align: center;
+                color: var(--text);
+                font-size: 0.85rem;
+                letter-spacing: 0.12em;
+                text-transform: uppercase;
+                background: linear-gradient(90deg, rgba(96, 165, 250, 0.18), rgba(139, 92, 246, 0.18));
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                margin-bottom: 12px;
+                font-weight: 700;
+                padding: 10px 12px;
+                backdrop-filter: blur(12px);
+                -webkit-backdrop-filter: blur(12px);
+            }
+
+            .content{
+                position: relative;
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .lyric_content{
+                position: relative;
+                width: 100%;
+                overflow-y: auto;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                padding: 8px;
+                border-radius: 16px;
+                background: rgba(15, 23, 42, 0.4);
+                border: 1px solid var(--border);
+                backdrop-filter: blur(14px);
+                -webkit-backdrop-filter: blur(14px);
+            }
+
+            .lyric_content ul{
+                list-style: none;
+                width: 100%;
+                padding: 0;
+                margin: 0;
+            }
+
+            .lyric_content ul::-webkit-scrollbar{
+                width: 8px;
+                background-color: rgba(15, 23, 42, 0.8);
+            }
+
+            .lyric_content ul::-webkit-scrollbar-thumb{
+                background: linear-gradient(180deg, rgba(96,165,250,0.8), rgba(139,92,246,0.7));
+                border-radius: 10px;
+            }
+
+            .lyric_content li{
+                position: relative;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                width: 100%;
+                margin-bottom: 10px;
+                min-height: 54px;
+                background: linear-gradient(135deg, rgba(15, 23, 42, 0.88), rgba(30, 41, 59, 0.54));
+                border: 1px solid rgba(148, 163, 184, 0.12);
+                border-radius: 12px;
+                padding: 10px 8px;
+                transition: background 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+                cursor: pointer;
+            }
+
+            .lyric_content li:hover{
+                background: rgba(30, 41, 59, 0.82);
+                border-color: rgba(96, 165, 250, 0.22);
+            }
+
+            .lyric_content div{
+                position: relative;
+                width: 100%;
+                font-size: 0.98rem;
+                font-weight: 700;
+                text-align: center;
+                color: var(--text);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                line-height: 1.45;
+            }
+
+            li {
+                width: 100%;
+            }
+
+            .li_item.active {
+                background: linear-gradient(135deg, rgba(52, 211, 153, 0.3), rgba(96, 165, 250, 0.22));
+                border-color: rgba(52, 211, 153, 0.5);
+                box-shadow: 0 0 0 1px rgba(52, 211, 153, 0.2), 0 8px 18px rgba(52, 211, 153, 0.14);
+            }
+        </style>
+    </head>
+    <body>
+        <div class="contener">
+            <div class="title">Lyrics Properties</div>
+            <div class="content">
+                <div class="lyric_content">
+                    <ul style="list-style: none;" id="lyric_content">
+                        <li>
+                            <div>Line 1</div>
+                            <div>Line 2</div>
+                        </li>
+                        <li>
+                            <div>Line 3</div>
+                            <div>Line 4</div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </body>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        let song_text = [];
+        let song_final_text=[];
+        let song_send_text=[];
+        let line_number=0;
+        socket.on("receiveData", (data) => {
+            if (data?.type === 'lyrics' && data.data) {
+                song_text = String(data.data.pageText || '').split(/\r?\n/).filter(line => line.trim());
+                two_line_display();
+            } else if (data?.type === 'song_lyric') {
+                get_lyrics(data.lyric_now);
+            }
+        });
+
+        socket.on("receive_command", (data) => {
+            if ((data?.cmd === "lyric_mini_prev" || data?.cmd === "lyric_mini_next")
+                && Number.isInteger(Number(data.lyric_num))) {
+                set_onclick_listeners(Number(data.lyric_num));
+            }
+        });
+
+        function get_lyrics(lyric_now){
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(lyric_now, 'text/html');
+            const divs = doc.querySelectorAll('div > div');
+            song_text = [];
+            divs.forEach((div) => {
+                song_text.push(div.textContent.trim());
+            });
+            two_line_display();
+        }
+        function two_line_display(){
+            song_final_text=[];
+            song_send_text=[];
+            const list = document.getElementById("lyric_content");
+            list.replaceChildren();
+
+            for (let i = 0; i < song_text.length; i += 2) {
+                song_send_text.push(song_text.slice(i, i + 2));
+            }
+
+            song_final_text = song_send_text;
+            song_send_text.forEach((lines, index) => {
+                const item = document.createElement("li");
+                item.className = "li_item";
+                lines.forEach(line => {
+                    const lineElement = document.createElement("div");
+                    lineElement.textContent = line;
+                    item.appendChild(lineElement);
+                });
+                item.addEventListener("click", () => set_onclick_listeners(index));
+                list.appendChild(item);
+            });
+
+            if (song_send_text.length) set_onclick_listeners(0);
+        }
+
+        function set_onclick_listeners(index){
+            if (!Number.isInteger(index) || index < 0 || index >= song_send_text.length) return;
+            document.querySelectorAll(".li_item").forEach((li, itemIndex) => {
+                li.classList.toggle("active", itemIndex === index);
+            });
+            line_number=index;
+            let data = { "cmd": "song_lyric_tv", "lyric": song_send_text[index] };
+            sendCommand(data);
+        }
+
+        
+        function sendCommand(command) {
+            socket.emit("command", command);
+        }
+        
+        // set short cut keys up down right and left key to 
+        document.addEventListener("keydown", (event) => {
+            if(event.key === "ArrowUp")
+            {
+                if(line_number>0)
+                {
+                    set_onclick_listeners(line_number-1);
+                }
+            }
+            if(event.key === "ArrowDown")
+            {
+                if(line_number<song_final_text.length-1)
+                {
+                    set_onclick_listeners(line_number+1);
+                }
+            }
+            if(event.key === "ArrowRight")
+            {
+                if(line_number<song_final_text.length-1)
+                {
+                    set_onclick_listeners(line_number+1);
+                }
+            }
+            if(event.key === "ArrowLeft")
+            {
+                if(line_number>0)
+                {
+                    set_onclick_listeners(line_number-1);
+                }
+            }
+        });
+    </script>
+</html>

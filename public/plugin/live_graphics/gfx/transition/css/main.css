@@ -1,0 +1,78 @@
+:root {
+    --color-orange: #f8993f;
+    --dark-color:#356245;
+    
+    --y-offset: 60%;
+}
+@font-face {
+    font-family: 'BelaBereka';
+    src: url('../../../font/BelaBereka.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Agbalumo';
+    src: url('../../../font/Agbalumo-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Menbere';
+    src: url('../../../font/Menbere-VariableFont_wght.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body{
+    width: 1920px;
+    height: 1080px;
+    overflow: hidden;
+}
+
+.container{
+    
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform: translateY(var(--y-offset));
+    overflow: hidden;
+    transition: transform 0.6s ease-in-out;
+}
+
+.content{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'BelaBereka';
+    transform: translateY(calc(-1 * var(--y-offset)));
+    font-size: 80px;
+    font-weight: bold;
+    color: #f97630;
+    transition: transform 0.6s ease-in-out;
+}
+
+.background{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('background_pic.png');
+    background-size: cover;
+    background-position: center;
+    z-index: -1;
+    transform: translateY(calc(-1 * var(--y-offset)));
+    transition: transform 0.6s ease-in-out;
+}

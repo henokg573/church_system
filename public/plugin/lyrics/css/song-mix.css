@@ -1,0 +1,45 @@
+.song_mix_page { width: 100%; height: 100vh; height: 100dvh; overflow: hidden; }
+.song_mix_shell { display: grid; grid-template-rows: auto auto minmax(0, 1fr) auto; gap: 0.85rem; width: min(1440px, 100%); height: 100%; margin: 0 auto; padding: 0.9rem 1rem; }
+.song_mix_header { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 1rem; }
+.song_mix_header h1 { margin: 0; font-size: 1.25rem; }
+.song_mix_header .setting_btn { justify-self: end; }
+.back_to_lyrics { color: var(--text); text-decoration: none; }
+.song_mix_form { display: contents; }
+.mix_metadata { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.7rem; padding: 0.8rem; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); }
+.mix_metadata label, .mix_field { display: grid; gap: 0.35rem; color: var(--muted); font-size: 0.82rem; }
+.mix_builder { display: grid; grid-template-columns: minmax(260px, 0.85fr) minmax(0, 1.5fr); gap: 0.8rem; min-height: 0; }
+.mix_source, .mix_selected { display: flex; flex-direction: column; gap: 0.7rem; min-width: 0; min-height: 0; padding: 1rem; }
+.mix_source h2, .mix_selected h2 { margin: 0; font-size: 1rem; }
+.source_songs { display: grid; grid-template-columns: repeat(auto-fill, minmax(135px, 1fr)); gap: 0.35rem; max-height: min(120px, 16vh); overflow-y: auto; }
+.source_songs > .mix_empty { grid-column: 1 / -1; }
+.source_song_item { display: flex; align-items: center; gap: 0.45rem; min-width: 0; padding: 0.4rem 0.5rem; border: 1px solid var(--line); border-radius: 5px; background: rgba(255,255,255,0.03); color: var(--text); text-align: left; cursor: pointer; }
+.source_song_item:hover, .source_song_item.active { border-color: var(--active); background: var(--active-soft); }
+.source_song_number { flex: 0 0 1.5rem; color: var(--active); font-size: 0.75rem; font-weight: 700; text-align: center; }
+.source_song_title { overflow: hidden; font-size: 0.78rem; text-overflow: ellipsis; white-space: nowrap; }
+.source_verses { display: flex; flex: 1; flex-direction: column; gap: 0.45rem; min-height: 0; overflow-y: auto; }
+.source_verse { display: grid; grid-template-columns: auto 2rem minmax(0, 1fr); gap: 0.55rem; align-items: start; padding: 0.6rem; border: 1px solid var(--line); border-radius: 6px; background: rgba(255,255,255,0.03); color: var(--text); cursor: pointer; }
+.source_verse input { margin-top: 0.2rem; accent-color: var(--active); }
+.source_verse_number { color: var(--active); font-size: 0.78rem; font-weight: 700; text-align: center; }
+.source_verse span { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 0.88rem; line-height: 1.5; }
+.mix_source .mini_btn { flex: 0 0 auto; }
+.mix_selected_header { display: flex; justify-content: space-between; align-items: center; gap: 0.8rem; }
+.mix_selected_header p { margin: 0.2rem 0 0; color: var(--muted); font-size: 0.78rem; }
+.mix_verse_list { display: flex; flex: 1; flex-direction: column; gap: 0.5rem; min-height: 0; margin: 0; padding: 0; overflow-y: auto; list-style: none; }
+.mix_verse_item { display: grid; grid-template-columns: 2rem minmax(0, 1fr) auto; gap: 0.6rem; align-items: center; padding: 0.65rem; border: 1px solid var(--line); border-radius: 6px; background: rgba(255,255,255,0.04); }
+.mix_verse_number { color: var(--active); font-weight: 700; }
+.mix_verse_text { min-width: 0; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 0.88rem; line-height: 1.5; }
+.mix_verse_origin { display: block; margin-top: 0.25rem; color: var(--muted); font-size: 0.72rem; }
+.mix_verse_actions { display: flex; gap: 0.25rem; }
+.mix_verse_actions button { width: 2rem; height: 2rem; border: 1px solid var(--line); border-radius: 4px; background: transparent; color: var(--text); cursor: pointer; }
+.mix_verse_actions button:disabled { opacity: 0.35; cursor: default; }
+.mix_verse_actions .remove_mix_verse { color: #ff8d8d; }
+.mix_empty { margin: auto; color: var(--muted); text-align: center; font-size: 0.88rem; }
+.mix_status { min-height: 1.2em; margin: 0; color: #ffb4b4; font-size: 0.85rem; }
+@media (max-width: 760px) {
+    .song_mix_page { height: auto; min-height: 100vh; overflow: auto; }
+    .song_mix_shell { grid-template-rows: auto auto minmax(600px, auto) auto; min-height: 100vh; height: auto; padding: 0.7rem; }
+    .song_mix_header { grid-template-columns: 1fr auto; }
+    .song_mix_header h1 { display: none; }
+    .mix_metadata { grid-template-columns: 1fr; }
+    .mix_builder { grid-template-columns: 1fr; grid-template-rows: minmax(300px, 44vh) minmax(300px, 1fr); }
+}

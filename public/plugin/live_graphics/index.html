@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Graphics</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="/css/presentation-nav.css">
+    <link rel="stylesheet" href="/css/mobile-system.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+</head>
+<body data-mobile-view="controls">
+    <nav class="title_bar" aria-label="Plugin navigation">
+        <span class="mobile_graphics_brand"><i class="bi bi-broadcast" aria-hidden="true"></i> Live Graphics</span>
+        <a href="/" aria-label="Main page"><i class="bi bi-house-door"></i> Home</a>
+        <a href="/plugin/presenter/dashboard.html" aria-label="Preacher Dashboard for PPT and PDF"><i class="bi bi-easel2"></i> Preacher Dashboard</a>
+        <a href="/plugin/presenter/" aria-label="Presenter Control"><i class="bi bi-sliders"></i> Presenter Control</a>
+        <a href="/plugin/bible/" aria-label="Bible plugin"><i class="bi bi-book"></i> Bible</a>
+        <a href="/plugin/lyrics/" aria-label="Lyrics plugin"><i class="bi bi-music-note-beamed"></i> Lyrics</a>
+        <a href="/plugin/timer/" aria-label="Timer plugin"><i class="bi bi-stopwatch"></i> Timer</a>
+        <a href="/plugin/live_graphics/" class="active" aria-label="Live Graphics plugin"><i class="bi bi-broadcast"></i> Live Graphics</a>
+        <button type="button" class="output_btn" id="output_btn">
+            <i class="bi bi-copy"></i> Copy Output Address
+        </button>
+    </nav>
+    <div class="live_graphics_container">
+            <div class="control_panel_top">
+                <div class="program preview_program">
+                    <iframe class="program_window" id="program_frame" src="screen/" frameborder="0"></iframe>
+                    <div class="program_label">PROGRAM</div>
+                </div>
+                <div class="preview preview_preview">
+                    <div class="current_clock" id="current_clock">00:00:00</div>
+                </div>
+            </div>
+            <nav class="mobile_tool_view_nav mobile_graphics_nav" aria-label="Live Graphics views">
+                <button type="button" data-mobile-view-button="controls" class="active" aria-current="page"><i class="bi bi-sliders" aria-hidden="true"></i><span>Controls</span></button>
+                <button type="button" data-mobile-view-button="properties"><i class="bi bi-window-sidebar" aria-hidden="true"></i><span>Properties</span></button>
+            </nav>
+            <div class="control_panel_bottom">
+                <div class="control_items_container">
+                    <div class="ci_title">CONTROL ITEMS</div>
+                    <div class="ci_content" >
+                        <div class="ci_item" id="ci_1" onclick="select_ci(1, event)">
+                            <div>01</div>
+                            <div>Name Plate</div>
+                            <div class="ci_inputs">
+                                <input type="text" id="name_text" placeholder="Name"/>
+                                <input type="text" id="title_text" placeholder="Title"/>
+                            </div>
+                            <div class="play_btn" id="play_btn_1" ><i class="bi bi-play-circle-fill"></i></div>
+                        </div>
+                        <div class="ci_item" id="ci_2" onclick="select_ci(2, event)">
+                            <div>02</div>
+                            <div>Bible Verse</div>
+                            
+                            <div class="play_btn" id="play_btn_2" ><i class="bi bi-play-circle-fill"></i></div>
+                        </div>
+                        <div class="ci_item" id="ci_3" onclick="select_ci(3, event)">
+                            <div>03</div>
+                            <div>Bible Verse Mini</div>
+                            <div class="play_btn" id="play_btn_3" ><i class="bi bi-play-circle-fill"></i></div>
+                        </div>
+                        <div class="ci_item" id="ci_4" onclick="select_ci(4, event)">
+                            <div>04</div>
+                            <div> Live Lyrics</div>
+                            <button onclick="lyric_prev()"><i class="bi bi-caret-left-fill"></i></button>
+                            <button onclick="lyric_next()"><i class="bi bi-caret-right-fill"></i></button>
+                            <div class="play_btn" id="play_btn_4"><i class="bi bi-play-circle-fill"></i></div>
+                        </div>
+                        <div class="ci_item" id="ci_5" onclick="select_ci(5, event)">
+                            <div>05</div>
+                            <div>Transition</div>
+                            <div class="ci_inputs">
+                                <select name="" id="transition_select">
+                                    <option value="">Select Transition</option>
+                                    <option value="የዝማረ ግዘ">የዝማረ ግዘ</option>
+                                    <option value="የስጦታ ጊዘ">የስጦታ ጊዘ</option>
+                                    <option value="የቃል ጊዘ">የቃል ጊዘ</option>
+                                </select>
+                            </div>
+                                
+                            <div class="play_btn" id="play_btn_5"><i class="bi bi-play-circle-fill"></i></div>
+                        </div>
+                        <div class="ci_item" id="ci_6" onclick="select_ci(6, event)">
+                            <div>06</div>
+                            <div>Now & Next</div>
+                            <div class="play_btn" id="play_btn_6"><i class="bi bi-play-circle-fill"></i></div>
+                        </div>
+                        <div class="ci_item" id="ci_7" onclick="select_ci(7, event)">
+                            <div>07</div>
+                            <div>Caption</div>
+                            <input type="text" id="caption_lable" placeholder="Caption Lable">
+                            <div class="import_caption">
+                                <input type="file" id="caption_file" accept=".xlsx" onchange="load_caption(this.files) " style="display: none;">
+                                <div class="import_btn" id="import_btn_7"><i class="bi bi-folder-fill"></i> Import Caption</div> 
+                            </div>
+                            <div class="play_btn" id="play_btn_7"><i class="bi bi-play-circle-fill"></i></div>
+                        </div>
+                        <div class="ci_item" id="ci_8" onclick="select_ci(8, event)">
+                            <div>08</div>
+                            <div>Live Sign</div>
+                            <div class="play_btn" id="play_btn_8"><i class="bi bi-play-circle-fill"></i></div>
+                        </div>
+                        <div class="ci_item" id="ci_9" onclick="select_ci(9, event)">
+                            <div>09</div>
+                            <div>Sidebar Advert</div>
+                            <select name="" id="sidebar_advert_select">
+                                <option value="">Select Sidebar Advert</option>
+                                <option value="advert_1">Advert 1</option>
+                                <option value="advert_2">Advert 2</option>
+                                <option value="advert_3">Advert 3</option>
+                            </select>
+                            <div class="choose_folder" id="choose_folder_9"><i class="bi bi-folder-fill"></i> Choose Folder</div>
+                            <div class="play_btn" id="play_btn_9"><i class="bi bi-play-circle-fill"></i></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="properties_window" id="properties_window">
+                    <div id="property_tab_title" class="property_tab_title">
+                        <div class="property_tab_title_item active">Name Plate</div>
+                        <div class="property_tab_title_item">Live Lyrics</div>
+                        <div class="property_tab_title_item">Transition</div>
+                        <div class="property_tab_title_item">Now & Next</div>
+                        <div class="property_tab_title_item">Caption</div>
+                    </div>
+                    <div class="property_tab_content">
+                        <iframe class="property_frame active" id="property_nameplate" src="gfx/nameplate/property.html" frameborder="0"></iframe>
+                        <iframe class="property_frame" id="property_lyrics" src="gfx/lyrics/property.html" frameborder="0"></iframe>  
+                        <iframe class="property_frame" id="property_transition" src="gfx/transition/property.html" frameborder="0"></iframe> 
+                    </div>
+                </div>
+            </div>
+    </div>
+</body>
+<script src="../lyrics/js/xlsx.full.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="js/main.js"></script>
+<script src="/js/mobile-system.js"></script>
+<script>
+    const outputButton = document.getElementById('output_btn');
+    outputButton.addEventListener('click', async () => {
+        const outputAddress = new URL('screen/', window.location.href).href;
+        try {
+            await navigator.clipboard.writeText(outputAddress);
+        } catch (error) {
+            const temporaryInput = document.createElement('textarea');
+            temporaryInput.value = outputAddress;
+            temporaryInput.style.position = 'fixed';
+            temporaryInput.style.opacity = '0';
+            document.body.appendChild(temporaryInput);
+            temporaryInput.select();
+            const copied = document.execCommand('copy');
+            temporaryInput.remove();
+            if (!copied) {
+                console.error('Could not copy Live Graphics output address:', error);
+                outputButton.textContent = 'Copy failed';
+                window.setTimeout(() => {
+                    outputButton.innerHTML = '<i class="bi bi-copy"></i> Copy Output Address';
+                }, 2000);
+                return;
+            }
+        }
+
+        outputButton.innerHTML = '<i class="bi bi-check2"></i> Address Copied';
+        window.setTimeout(() => {
+            outputButton.innerHTML = '<i class="bi bi-copy"></i> Copy Output Address';
+        }, 2000);
+    });
+</script>
+</html>

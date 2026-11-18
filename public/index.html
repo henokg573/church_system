@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Church System</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.css" integrity="sha384-Bk5cbLkZQ5raZ0+H2/+VbfYx3WpvxvQK4zqXZr7sYODuaX7bKXoSOnipQxkaS8sv" crossorigin="anonymous">
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="hero">
+        <div class="hero-copy">
+          <span class="eyebrow">Church Presentation Suite</span>
+          <h1>Kebena SDA Worship tools in one place</h1>
+          <p>Open the Bible, manage lyrics, Sabbath School Timer and keep your service display neat and consistent.</p>
+        </div>
+      </header>
+
+      <main class="container" aria-label="Main system menu">
+        <button type="button" class="item" id="btn_bible" aria-label="Open Bible">
+          <i class="bi bi-book"></i>
+          <span>መጽሐፍ ቅዱስ</span>
+          <span>Bible</span>
+        </button>
+
+        <button type="button" class="item" id="btn_hymns" aria-label="Open Hymns and Lyrics">
+          <i class="bi bi-music-note-beamed"></i>
+          <span>ዝማረዎች</span>
+          <span>Hymns</span>
+        </button>
+
+        <button type="button" class="item" id="btn_live_graphics" aria-label="Open Live Graphics">
+          <i class="bi bi-broadcast-pin"></i>
+          <span>Live Graphics</span>
+          <span>Presentation controls</span>
+        </button>
+
+        <button type="button" class="item" id="btn_live_controller" aria-label="Open Live Controller">
+          <i class="bi bi-camera-video"></i>
+          <span>Live Controller</span>
+          <span>OBS and remote controls</span>
+        </button>
+
+        <button type="button" class="item" id="btn_timer" aria-label="Open Timer">
+          <i class="bi bi-stopwatch"></i>
+          <span>Timer</span>
+          <span>Service countdown</span>
+        </button>
+
+        <button type="button" class="item" id="btn_wallpapers" aria-label="Open Wallpaper Studio">
+          <i class="bi bi-image"></i>
+          <span>Wallpaper Studio</span>
+          <span>Image, video, or text backgrounds</span>
+        </button>
+        <button type="button" class="item" id="btn_presenter" aria-label="Open Preacher Dashboard">
+          <i class="bi bi-person-video3"></i>
+          <span>Preacher Dashboard</span>
+          <span>Upload & present PPT / PDF</span>
+        </button>
+
+        <button type="button" class="item" id="btn_presenter_control" aria-label="Open Presenter Control">
+          <i class="bi bi-sliders"></i>
+          <span>Presenter Control</span>
+          <span>Manage the preacher's slides</span>
+        </button>
+      </main>
+    </div>
+
+    <script src="js/script.js"></script>
+  </body>
+</html>

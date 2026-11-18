@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <title>Timer Screen</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="stylesheet" type="text/css" media="screen" href="css/style.css" />
+    </head>
+    <body>
+        <div class="timer_screen_container">
+            <div class="timer_title" id="screen_timer_title">
+                Timer Screen
+            </div>
+            <div class="timer_screen_display" id="timer_screen_display">
+                <span id="screen_timer_minutes">00</span><span>:</span><span id="screen_timer_seconds">00</span>
+            </div>
+            <div class="screen_warning_message hide" id="screen_warning_message">
+                <span id="screen_warning_text"> warning text</span>
+            </div>
+        </div>
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="js/script.js"></script>
+    </body>
+</html>

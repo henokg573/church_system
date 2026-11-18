@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Preacher Dashboard</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="/css/mobile-system.css">
+  <style>
+    body { background: #0b1620; color: #e8eef4; }
+    .card { background: #12222f; border: 1px solid #1e3a4d; border-radius: 12px; }
+    .slide-frame { width: 100%; aspect-ratio: 16/9; border: none; background: #000; border-radius: 8px; }
+    .nav-btn { min-width: 110px; }
+    .notes-area { min-height: 160px; resize: vertical; background: #0e1c27; color: #e8eef4; border-color: #1e3a4d; }
+    .chat-box { height: 220px; overflow-y: auto; background: #0e1c27; border-radius: 8px; padding: 10px; border: 1px solid #1e3a4d; }
+    .chat-msg { margin-bottom: 8px; }
+    .chat-msg .from { font-weight: bold; color: #6ec1ff; }
+    .clock { font-variant-numeric: tabular-nums; font-size: 2.2rem; font-weight: 700; color: #6ec1ff; }
+    .list-group-item { background: #0e1c27; border-color: #1e3a4d; color: #e8eef4; }
+    .login-box { max-width: 420px; margin: 10vh auto; }
+    .login-box, .login-box h4, .login-box .form-label { color: #e8eef4 !important; }
+    .login-box .form-control { background: #0e1c27; color: #e8eef4; border-color: #1e3a4d; }
+    .login-box .form-control::placeholder { color: #7d93a6; }
+    .login-box .form-control:focus { color: #e8eef4; background: #0e1c27; }
+    .file-list-item:hover { background: #16303f; }
+    .badge-live { background: #e74c3c; }
+    .status-bar { font-size: .9rem; color: #9fb6c6; }
+    .card, .card h4, .card h6, .card .form-label, .card .form-check-label, .card .status-bar {
+      color: #e8eef4 !important;
+    }
+    .card .form-control, .card textarea {
+      background: #0e1c27;
+      color: #e8eef4;
+      border-color: #1e3a4d;
+    }
+    .card .form-control::placeholder {
+      color: #7d93a6;
+    }
+    .card .form-control:focus {
+      color: #e8eef4;
+      background: #0e1c27;
+    }
+    .hidden { display: none !important; }
+    @media (max-width: 600px) {
+      body { overflow-x: hidden; }
+      .container { width: 100%; max-width: none; padding-right: 12px; padding-left: 12px; }
+      #dashboard_view { display: flex; min-height: 100dvh; flex-direction: column; padding-top: 12px !important; padding-bottom: 82px !important; }
+      #dashboard_view > .d-flex { flex-wrap: wrap; gap: 8px; }
+      #dashboard_view > .d-flex h4 { width: 100%; margin: 0; font-size: 1.05rem; }
+      #dashboard_view > .d-flex > div { flex-wrap: wrap; gap: 6px !important; }
+      #dashboard_view .row { display: block; flex: 1; min-height: 0; margin: 0; }
+      #dashboard_view .row > div { display: block; width: 100%; padding: 0; }
+      #dashboard_view .row [data-mobile-panel] { display: none !important; }
+      body[data-mobile-view="slides"] #dashboard_view [data-mobile-panel="slides"],
+      body[data-mobile-view="files"] #dashboard_view [data-mobile-panel="files"],
+      body[data-mobile-view="notes"] #dashboard_view [data-mobile-panel="notes"],
+      body[data-mobile-view="chat"] #dashboard_view [data-mobile-panel="chat"] { display: flex !important; flex-direction: column; }
+      #dashboard_view > .mobile_tool_view_nav { position: fixed; right: 0; bottom: 0; left: 0; z-index: 40; }
+      .card { padding: 12px !important; border-radius: 10px; }
+      .card[data-mobile-panel="slides"], .card[data-mobile-panel="chat"] { min-height: calc(100dvh - 170px); }
+      .card[data-mobile-panel="files"] { min-height: 55vh; }
+      .card[data-mobile-panel="slides"] { min-height: 0; }
+      .slide-frame { height: auto; min-height: 0; flex: 0 0 auto; aspect-ratio: 16 / 9; }
+      #file_list { min-height: 0; flex: 1; overflow-y: auto; }
+      #active_name, #page_label { display: block; margin: 0 !important; }
+      #btn_prev, #btn_next, #btn_expand { min-width: 0; flex: 1 1 0; }
+      #notes_area { min-height: 120px; }
+      .chat-box { height: auto; min-height: 170px; flex: 1; }
+    }
+  </style>
+</head>
+<body data-mobile-view="slides">
+  <!-- LOGIN -->
+  <div id="login_view" class="login-box">
+    <div class="card p-4">
+      <h4 class="mb-3"><i class="bi bi-person-badge"></i> Preacher Login</h4>
+      <div class="mb-3">
+        <label class="form-label">Access Code</label>
+        <input type="password" id="login_code" class="form-control" placeholder="Enter access code">
+      </div>
+      <div id="login_error" class="text-danger mb-2 small hidden"></div>
+      <button id="btn_login" class="btn btn-primary w-100"><i class="bi bi-box-arrow-in-right"></i> Enter</button>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="dashboard_view" class="container py-4 hidden">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h4><i class="bi bi-easel2"></i> Preacher Dashboard</h4>
+      <div class="d-flex gap-2 align-items-center">
+        <details class="mobile_tool_menu">
+          <summary aria-label="Open system menu"><i class="bi bi-list" aria-hidden="true"></i><span>Menu</span></summary>
+          <div class="mobile_tool_menu_panel">
+            <a href="/"><i class="bi bi-house-door" aria-hidden="true"></i> Home</a>
+            <a href="/plugin/bible/"><i class="bi bi-book" aria-hidden="true"></i> Bible</a>
+            <a href="/plugin/lyrics/"><i class="bi bi-music-note-beamed" aria-hidden="true"></i> Lyrics</a>
+            <a href="/plugin/timer/"><i class="bi bi-stopwatch" aria-hidden="true"></i> Timer</a>
+            <a href="/plugin/live_graphics/"><i class="bi bi-broadcast" aria-hidden="true"></i> Live Graphics</a>
+            <a href="/plugin/presenter/dashboard.html"><i class="bi bi-easel2" aria-hidden="true"></i> Preacher Dashboard</a>
+            <a href="/plugin/presenter/"><i class="bi bi-sliders" aria-hidden="true"></i> Presenter Control</a>
+          </div>
+        </details>
+        <span id="conn_status" class="badge bg-secondary">connecting…</span>
+        <a href="/screen/01/" target="_blank" class="btn btn-sm btn-outline-info"><i class="bi bi-arrows-fullscreen"></i> Open Display</a>
+        <button id="btn_logout" class="btn btn-sm btn-outline-light"><i class="bi bi-box-arrow-right"></i> Logout</button>
+      </div>
+    </div>
+
+    <div class="row g-3">
+      <!-- LEFT: slides -->
+      <div class="col-lg-8">
+        <div class="card p-3" data-mobile-panel="slides">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <div>
+              <span id="active_name" class="fw-bold">No presentation loaded</span>
+              <span id="page_label" class="status-bar ms-2"></span>
+            </div>
+            <div class="d-flex gap-2 align-items-center">
+              <span id="live_badge" class="badge badge-live hidden">● LIVE</span>
+              <button id="btn_go_live" class="btn btn-success btn-sm"><i class="bi bi-broadcast"></i> Go Live</button>
+              <button id="btn_stop_live" class="btn btn-outline-danger btn-sm hidden"><i class="bi bi-stop-circle"></i> Stop Live</button>
+            </div>
+          </div>
+          <iframe id="slide_frame" class="slide-frame" src="about:blank"></iframe>
+          <div class="d-flex justify-content-center gap-2 mt-3">
+            <button id="btn_prev" class="btn btn-outline-light nav-btn"><i class="bi bi-skip-backward"></i> Prev</button>
+            <button id="btn_next" class="btn btn-light nav-btn">Next <i class="bi bi-skip-forward"></i></button>
+            <button id="btn_expand" class="btn btn-outline-light nav-btn" title="Open the full-screen presenter display"><i class="bi bi-arrows-fullscreen"></i> Expand</button>
+          </div>
+        </div>
+
+        <div class="card p-3 mt-3" data-mobile-panel="files">
+          <h6><i class="bi bi-collection"></i> My Uploads</h6>
+          <div class="input-group mb-2">
+            <input type="file" id="file_input" class="form-control" accept=".ppt,.pptx,.pdf">
+            <button id="btn_upload" class="btn btn-primary"><i class="bi bi-upload"></i> Upload</button>
+          </div>
+          <div id="upload_progress" class="progress mb-2 hidden" style="height:6px">
+            <div id="upload_bar" class="progress-bar" style="width:0%"></div>
+          </div>
+          <ul id="file_list" class="list-group"></ul>
+        </div>
+      </div>
+
+      <!-- RIGHT: tools -->
+      <div class="col-lg-4">
+        <div class="card p-3 text-center" data-mobile-panel="notes">
+          <div class="status-bar">Service clock</div>
+          <div id="clock" class="clock">--:--:--</div>
+        </div>
+
+        <div class="card p-3 mt-3" data-mobile-panel="notes">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="toggle_notes" checked>
+            <label class="form-check-label" for="toggle_notes">Show notes</label>
+          </div>
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="toggle_clock" checked>
+            <label class="form-check-label" for="toggle_clock">Show clock on screen</label>
+          </div>
+          <label class="form-label mt-2 mb-1">Speaker notes</label>
+          <textarea id="notes_area" class="form-control notes-area" placeholder="Type your sermon notes here…"></textarea>
+        </div>
+
+        <div class="card p-3 mt-3" data-mobile-panel="chat">
+          <h6><i class="bi bi-chat-dots"></i> Talk to the media team</h6>
+          <div id="chat_box" class="chat-box mb-2"></div>
+          <div class="input-group">
+            <input type="text" id="chat_input" class="form-control" placeholder="Message…">
+            <button id="btn_chat_send" class="btn btn-outline-primary"><i class="bi bi-send"></i></button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <nav class="mobile_tool_view_nav" aria-label="Dashboard views">
+      <button type="button" data-mobile-view-button="slides" class="active" aria-current="page"><i class="bi bi-easel" aria-hidden="true"></i><span>Slides</span></button>
+      <button type="button" data-mobile-view-button="files"><i class="bi bi-collection" aria-hidden="true"></i><span>Files</span></button>
+      <button type="button" data-mobile-view-button="notes"><i class="bi bi-journal-text" aria-hidden="true"></i><span>Notes</span></button>
+      <button type="button" data-mobile-view-button="chat"><i class="bi bi-chat-dots" aria-hidden="true"></i><span>Chat</span></button>
+    </nav>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="/js/mobile-system.js"></script>
+</body>
+</html>

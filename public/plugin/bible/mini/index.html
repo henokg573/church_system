@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bible Mini</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        @font-face {
+            font-family: "Amhara";
+            src: url("/fonts/Amhara_reduced.otf") format("opentype");
+        }
+        @font-face {
+            font-family: "Agbalumo";
+            src: url("/fonts/Agbalumo_Regular.ttf") format("truetype");
+        }
+        @font-face {
+            font-family: "BelaBreka";
+            src: url("/fonts/Bela_Bereka.ttf") format("truetype");
+        }
+        @font-face {
+            font-family: "Benaiah";
+            src: url("/fonts/Benaiah.ttf") format("truetype");
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            position: relative;
+            width: 1920px;
+            height: 1080px;
+            overflow: hidden;
+            background: transparent;
+        }
+        #container {
+            position: relative;
+            display: none;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        .quote-holder {
+            position: absolute;
+            left: 50%;
+            bottom: 8%;
+            display: none;
+            width: 78%;
+            max-height: 44%;
+            padding: 1.6rem 2.5rem;
+            transform: translateX(-50%);
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            overflow: hidden;
+            font-family: "Roboto", sans-serif;
+        }
+        @keyframes mini-fade-intro { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes mini-fade-outro { from { opacity: 1; } to { opacity: 0; } }
+        @keyframes mini-slide-up-intro { from { opacity: 0; transform: translate(-50%, 36px); } to { opacity: 1; transform: translate(-50%, 0); } }
+        @keyframes mini-slide-up-outro { from { opacity: 1; transform: translate(-50%, 0); } to { opacity: 0; transform: translate(-50%, 36px); } }
+        @keyframes mini-slide-down-intro { from { opacity: 0; transform: translate(-50%, -36px); } to { opacity: 1; transform: translate(-50%, 0); } }
+        @keyframes mini-slide-down-outro { from { opacity: 1; transform: translate(-50%, 0); } to { opacity: 0; transform: translate(-50%, -36px); } }
+        @keyframes mini-slide-left-intro { from { opacity: 0; transform: translate(calc(-50% + 60px), 0); } to { opacity: 1; transform: translate(-50%, 0); } }
+        @keyframes mini-slide-left-outro { from { opacity: 1; transform: translate(-50%, 0); } to { opacity: 0; transform: translate(calc(-50% - 60px), 0); } }
+        @keyframes mini-slide-right-intro { from { opacity: 0; transform: translate(calc(-50% - 60px), 0); } to { opacity: 1; transform: translate(-50%, 0); } }
+        @keyframes mini-slide-right-outro { from { opacity: 1; transform: translate(-50%, 0); } to { opacity: 0; transform: translate(calc(-50% + 60px), 0); } }
+        @keyframes mini-zoom-intro { from { opacity: 0; transform: translate(-50%, 0) scale(0.92); } to { opacity: 1; transform: translate(-50%, 0) scale(1); } }
+        @keyframes mini-zoom-outro { from { opacity: 1; transform: translate(-50%, 0) scale(1); } to { opacity: 0; transform: translate(-50%, 0) scale(0.92); } }
+        .mini-background {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 0;
+        }
+        .mini-background img,
+        .mini-background video {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .quote,
+        .quote-reference {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            color: #fff;
+            text-align: center;
+            overflow-wrap: anywhere;
+        }
+        .quote {
+            font-family: "Amhara", sans-serif;
+            font-size: 4rem;
+            line-height: 1.25;
+            font-weight: 400;
+        }
+        .quote-reference {
+            flex-shrink: 0;
+            font-family: "Amhara", sans-serif;
+            font-size: 1.8rem;
+            line-height: 1.2;
+            font-weight: 600;
+        }
+    </style>
+    <style id="dynamic_custom_fonts"></style>
+</head>
+<body>
+    <div id="container">
+        <div class="quote-holder" id="quote_holder">
+            <div class="mini-background" id="mini_background">
+                <img id="mini_bg_image" alt="" style="display:none">
+                <video id="mini_bg_video" autoplay muted loop style="display:none">
+                    <source id="mini_bg_video_src" src="" type="video/mp4">
+                </video>
+            </div>
+            <div class="quote" id="quote"></div>
+            <div class="quote-reference" id="quote_reference"></div>
+        </div>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        const graphicProps = {
+            quoteColor: '#ffffff', refColor: '#ffffff',
+            miniQuoteFontSize: 4, miniMinFontSize: 1, miniRefFontSize: 1.8,
+            miniIntroAnimation: 'fade', miniOutroAnimation: 'fade', miniAnimationDuration: 500,
+            quoteFontFamily: 'Amhara', refFontFamily: 'Amhara',
+            quoteFontWeight: '400', refFontWeight: '600', refFontSize: 1.8,
+            miniWidth: 78, miniBottom: 8, miniPaddingX: 40, miniPaddingY: 26,
+            miniBgShow: true, miniBgType: 'color', miniBgColor: '#a52a2a',
+            miniBgOpacity: 85, miniBgRadius: 32, miniBgBlur: 0,
+            gradColor1: '#1a1a2e', gradColor2: '#16213e', gradColor3: '#0f3460',
+            gradAngle: 135, bgImageUrl: '', imgFit: 'cover', bgVideoUrl: ''
+        };
+        const oldTestament = ['Genesis','Exodus','Leviticus','Numbers','Deuteronomy','Joshua','Judges','Ruth','1 Samuel','2 Samuel','1 Kings','2 Kings','1 Chronicles','2 Chronicles','Ezra','Nehemiah','Esther','Job','Psalms','Proverbs','Ecclesiastes','Song of Solomon','Isaiah','Jeremiah','Lamentations','Ezekiel','Daniel','Hosea','Joel','Amos','Obadiah','Jonah','Micah','Nahum','Habakkuk','Zephaniah','Haggai','Zechariah','Malachi'];
+        const newTestament = ['Matthew','Mark','Luke','John','Acts','Romans','1 Corinthians','2 Corinthians','Galatians','Ephesians','Philippians','Colossians','1 Thessalonians','2 Thessalonians','1 Timothy','2 Timothy','Titus','Philemon','Hebrews','James','1 Peter','2 Peter','1 John','2 John','3 John','Jude','Revelation'];
+        const oldTestamentAm = ['ዘፍጥረት','ዘጸአት','ዘሌዋውያን','ዘኁልቁ','ዘዳግም','ኢያሱ','መሳፍንት','ሩት','1ኛ ሳሙኤል','2ኛ ሳሙኤል','1ኛ ነገሥት','2ኛ ነገሥት','1ኛ ዜና','2ኛ ዜና','እዝራ','ነህምያ','አስቴር','ኢዮብ','መዝሙር','ምሳሌ','መክብብ','መኃልይ','ኢሳይያስ','ኤርምያስ','ሰቆቃወ ኤርምያስ','ሕዝቅኤል','ዳንኤል','ሆሴዕ','ኢዩኤል','አሞጽ','አብድዩ','ዮናስ','ሚክያስ','ናሆም','ዘካርያስ','ሶፎኒያስ','ሐጌ','ዘካርያስ','ሚልክያስ'];
+        const newTestamentAm = ['ማቴዎስ','ማርቆስ','ሉቃስ','ዮሐንስ','ሐዋርያት','ሮሜ','1ኛ ቆሮንቶስ','2ኛ ቆሮንቶስ','ገላትያ','ኤፌሶን','ፊልጵስዩስ','ቆላስይስ','1ኛ ተሰሎንቄ','2ኛ ተሰሎንቄ','1ኛ ጢሞቴዎስ','2ኛ ጢሞቴዎስ','ቲቶ','ፊልሞና','ዕብራውያን','ያዕቆብ','1ኛ ጴጥሮስ','2ኛ ጴጥሮስ','1ኛ ዮሐንስ','2ኛ ዮሐንስ','3ኛ ዮሐንስ','ይሁዳ','ራዕይ'];
+        let bibleVisible = false;
+        let bibleSubEnabled = true;
+        let bibleState = null;
+
+        async function loadFonts() {
+            try {
+                const response = await fetch('/api/bible/fonts');
+                const data = await response.json();
+                const allFonts = [...(data.builtin || []), ...(data.custom || [])];
+                const css = allFonts.filter(font => font.url && font.family).map(font =>
+                    `@font-face{font-family:"${font.family}";src:url("${font.url}") format("${font.format}");font-weight:normal;font-style:normal;font-display:swap;}`
+                ).join('\n');
+                document.getElementById('dynamic_custom_fonts').textContent = css;
+                if (document.fonts?.ready) document.fonts.ready.then(autoScaleQuote);
+            } catch (error) {
+                console.warn('Error loading fonts in mini Bible display:', error);
+            }
+        }
+
+        function setVideoSource(source, url, video) {
+            if (!source || !video || !url || source.getAttribute('src') === url) return;
+            source.setAttribute('src', url);
+            video.load();
+        }
+
+        function applyGraphicProps(properties) {
+            if (properties) Object.assign(graphicProps, properties);
+            const settings = graphicProps;
+            const quote = document.getElementById('quote');
+            const reference = document.getElementById('quote_reference');
+            const holder = document.getElementById('quote_holder');
+            const miniBackground = document.getElementById('mini_background');
+            const backgroundImage = document.getElementById('mini_bg_image');
+            const backgroundVideo = document.getElementById('mini_bg_video');
+
+            quote.style.color = settings.quoteColor || '#ffffff';
+            quote.style.fontFamily = settings.quoteFontFamily || 'Amhara';
+            quote.style.fontWeight = settings.quoteFontWeight || '400';
+            reference.style.color = settings.refColor || '#ffffff';
+            reference.style.fontFamily = settings.refFontFamily || 'Amhara';
+            reference.style.fontWeight = settings.refFontWeight || '600';
+            reference.style.fontSize = `${settings.miniRefFontSize ?? 1.8}rem`;
+
+            const width = Number(settings.miniWidth);
+            const bottom = Number(settings.miniBottom);
+            const paddingX = Number(settings.miniPaddingX);
+            const paddingY = Number(settings.miniPaddingY);
+            holder.style.width = `${Number.isFinite(width) ? Math.min(100, Math.max(40, width)) : 78}%`;
+            holder.style.bottom = `${Number.isFinite(bottom) ? Math.min(30, Math.max(0, bottom)) : 8}%`;
+            holder.style.padding = `${Number.isFinite(paddingY) ? Math.min(80, Math.max(0, paddingY)) : 26}px ${Number.isFinite(paddingX) ? Math.min(120, Math.max(0, paddingX)) : 40}px`;
+
+            miniBackground.style.display = settings.miniBgShow === false ? 'none' : 'block';
+            miniBackground.style.background = '';
+            miniBackground.style.opacity = '1';
+            backgroundImage.style.display = 'none';
+            backgroundVideo.style.display = 'none';
+            const opacity = (settings.miniBgOpacity ?? 85) / 100;
+            if (settings.miniBgType === 'gradient') {
+                miniBackground.style.background = `linear-gradient(${settings.gradAngle ?? 135}deg, ${settings.gradColor1 || '#1a1a2e'}, ${settings.gradColor2 || '#16213e'}, ${settings.gradColor3 || '#0f3460'})`;
+                miniBackground.style.opacity = opacity;
+            } else if (settings.miniBgType === 'image' && settings.bgImageUrl) {
+                backgroundImage.src = settings.bgImageUrl;
+                backgroundImage.style.objectFit = settings.imgFit || 'cover';
+                backgroundImage.style.opacity = opacity;
+                backgroundImage.style.display = 'block';
+            } else if (settings.miniBgType === 'video' && settings.bgVideoUrl) {
+                setVideoSource(document.getElementById('mini_bg_video_src'), settings.bgVideoUrl, backgroundVideo);
+                backgroundVideo.style.opacity = opacity;
+                backgroundVideo.style.display = 'block';
+            } else {
+                miniBackground.style.backgroundColor = settings.miniBgColor || '#a52a2a';
+                miniBackground.style.opacity = opacity;
+            }
+            const blur = settings.miniBgBlur ?? 0;
+            miniBackground.style.backdropFilter = blur ? `blur(${blur}px)` : '';
+            miniBackground.style.webkitBackdropFilter = miniBackground.style.backdropFilter;
+            backgroundImage.style.filter = blur ? `blur(${blur}px)` : '';
+            backgroundVideo.style.filter = blur ? `blur(${blur}px)` : '';
+            holder.style.borderRadius = `${settings.miniBgRadius ?? 32}px`;
+            autoScaleQuote();
+        }
+
+        function autoScaleQuote() {
+            const quote = document.getElementById('quote');
+            const holder = document.getElementById('quote_holder');
+            if (!quote || !holder) return;
+            const referenceHeight = document.getElementById('quote_reference').offsetHeight;
+            const style = getComputedStyle(holder);
+            const availableHeight = holder.clientHeight - referenceHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom) - 20;
+            let fontSize = Number(graphicProps.miniQuoteFontSize) || 4;
+            const minSize = Math.min(Number(graphicProps.miniMinFontSize) || 1, fontSize);
+            quote.style.fontSize = `${fontSize}rem`;
+            while (quote.scrollHeight > availableHeight && fontSize > minSize) {
+                fontSize = Math.max(minSize, fontSize - 0.05);
+                quote.style.fontSize = `${fontSize}rem`;
+            }
+        }
+
+        let holderAnimationId = 0;
+
+        function animateHolder(phase, animation, onFinished) {
+            const holder = document.getElementById('quote_holder');
+            const animationId = ++holderAnimationId;
+            const effect = ['fade', 'slide-up', 'slide-down', 'slide-left', 'slide-right', 'zoom'].includes(animation)
+                ? `mini-${animation}-${phase}`
+                : '';
+            const duration = Math.max(200, Math.min(2000, Number(graphicProps.miniAnimationDuration) || 500));
+            holder.style.animation = 'none';
+            if (!effect || animation === 'none') {
+                holder.style.animation = '';
+                onFinished?.();
+                return;
+            }
+
+            void holder.offsetWidth;
+            holder.style.animation = `${effect} ${duration}ms ease both`;
+            let finished = false;
+            const finish = () => {
+                if (finished || animationId !== holderAnimationId) return;
+                finished = true;
+                holder.style.animation = '';
+                onFinished?.();
+            };
+            holder.addEventListener('animationend', event => {
+                if (event.target === holder) finish();
+            }, { once: true });
+            window.setTimeout(finish, duration + 100);
+        }
+
+        socket.on('font_updated', loadFonts);
+        socket.on('receiveConfig', config => {
+            if (config?.type === 'bible_properties' && config.properties) applyGraphicProps(config.properties);
+        });
+        socket.on('graphics_visibility_state', state => {
+            if (typeof state?.bible_sub !== 'boolean') return;
+            bibleSubEnabled = state.bible_sub;
+            renderBibleState();
+        });
+        socket.on('receive_remote_command', command => {
+            if (command?.type !== 'bible_sub' || typeof command.isShow !== 'boolean') return;
+            bibleSubEnabled = command.isShow;
+            renderBibleState();
+        });
+        socket.on('receiveData', response => {
+            if (response?.type !== 'bible' || !response.data) return;
+            bibleState = response.data;
+            renderBibleState();
+        });
+
+        function renderBibleState() {
+            const state = bibleState;
+            const verse = state?.selectedVerse;
+            if (!state) return;
+            const wasVisible = bibleVisible;
+            bibleVisible = Boolean(bibleSubEnabled && verse?.text);
+            const container = document.getElementById('container');
+            const holder = document.getElementById('quote_holder');
+            if (!bibleVisible) {
+                if (wasVisible) {
+                    animateHolder('outro', graphicProps.miniOutroAnimation, () => {
+                        if (!bibleVisible) {
+                            holder.style.display = 'none';
+                            container.style.display = 'none';
+                        }
+                    });
+                } else {
+                    holder.style.display = 'none';
+                    container.style.display = 'none';
+                }
+                return;
+            }
+
+            container.style.display = 'block';
+            holder.style.display = 'flex';
+            if (!wasVisible) animateHolder('intro', graphicProps.miniIntroAnimation);
+
+            const oldBooks = state.lang === 'am' ? oldTestamentAm : oldTestament;
+            const newBooks = state.lang === 'am' ? newTestamentAm : newTestament;
+            const book = [...oldBooks, ...newBooks][state.selectedBook] || verse.book || '';
+            const chapter = state.selectedChapter || verse.chapter || 1;
+            const verseNumber = verse.verse ?? verse.verse_number ?? 1;
+            document.getElementById('quote').textContent = `"${verse.text}"`;
+            document.getElementById('quote_reference').textContent = `${book} ${chapter}:${verseNumber}`;
+            applyGraphicProps();
+        }
+
+        const quoteObserver = new MutationObserver(autoScaleQuote);
+        quoteObserver.observe(document.getElementById('quote'), { childList: true, characterData: true, subtree: true });
+        window.addEventListener('resize', autoScaleQuote);
+        loadFonts();
+    </script>
+</body>
+</html>

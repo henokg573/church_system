@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>News Ticker - Live Graphics</title>
+        <style>
+            :root {
+                --ticker-height: 56px;
+                --label-bg: #f27b03;
+                --label-color: #ffffff;
+                --strip-bg: rgba(15, 15, 20, 0.92);
+                --strip-color: #f0f0f0;
+                --accent: #f27b03;
+                --separator-color: #f27b03;
+                --font-label: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                --font-ticker: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                --scroll-speed: 30s;
+            }
+
+            @font-face {
+                font-family: 'Menbere';
+                src: url('../../font/Menbere-VariableFont_wght.ttf');
+                font-weight: normal;
+                font-style: normal;
+            }
+
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                width: 1920px;
+                height: 1080px;
+                overflow: hidden;
+                background: transparent;
+                font-family: var(--font-ticker);
+            }
+
+            .container {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+            }
+
+            /* ── Ticker wrapper ── */
+            .ticker-bar {
+                position: absolute;
+                bottom: 60px;
+                left: 75px;
+                width: calc(100% - 75px);
+                height: var(--ticker-height);
+                display: flex;
+                flex-direction: row;
+                align-items: stretch;
+                transform: translateY(120%);
+                opacity: 0;
+                transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+                            opacity 0.5s ease;
+                z-index: 10;
+            }
+
+            .ticker-bar.active {
+                transform: translateY(0);
+                opacity: 1;
+            }
+
+            /* ── Top accent line ── */
+            .ticker-bar::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 3px;
+                background: linear-gradient(90deg, var(--accent), #ff5f6d, var(--accent));
+                z-index: 5;
+            }
+
+            /* ── Label badge ── */
+            .ticker-label {
+                position: relative;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: var(--label-bg);
+                color: var(--label-color);
+                font-family: var(--font-label);
+                font-size: 1.1rem;
+                font-weight: 700;
+                letter-spacing: 2px;
+                text-transform: uppercase;
+                padding: 0 28px;
+                white-space: nowrap;
+                z-index: 3;
+                min-width: 160px;
+            }
+
+            /* Angled edge on the label */
+            .ticker-label::after {
+                content: '';
+                position: absolute;
+                top: 0;
+                right: -20px;
+                width: 0;
+                height: 0;
+                border-top: calc(var(--ticker-height) / 2) solid transparent;
+                border-bottom: calc(var(--ticker-height) / 2) solid transparent;
+                border-left: 20px solid var(--label-bg);
+                z-index: 4;
+            }
+
+            /* ── Scrolling strip ── */
+            .ticker-strip {
+                position: relative;
+                flex: 1;
+                background: var(--strip-bg);
+                overflow: hidden;
+                display: flex;
+                align-items: center;
+            }
+
+            /* Fade edges for smooth appearance */
+            .ticker-strip::before,
+            .ticker-strip::after {
+                content: '';
+                position: absolute;
+                top: 0;
+                width: 60px;
+                height: 100%;
+                z-index: 2;
+                pointer-events: none;
+            }
+
+            .ticker-strip::before {
+                left: 0;
+                background: linear-gradient(90deg, var(--strip-bg), transparent);
+            }
+
+            .ticker-strip::after {
+                right: 0;
+                background: linear-gradient(270deg, var(--strip-bg), transparent);
+            }
+
+            /* ── Scroll track ── */
+            .ticker-track {
+                font-size: 1.5rem;
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                white-space: nowrap;
+                will-change: transform;
+                animation: ticker-scroll var(--scroll-speed) linear infinite;
+            }
+
+            @keyframes ticker-scroll {
+                0% {
+                    transform: translateX(0);
+                }
+                100% {
+                    transform: translateX(-50%);
+                }
+            }
+
+            /* Pause on hover (useful for preview/debug) */
+            .ticker-strip:hover .ticker-track {
+                animation-play-state: paused;
+            }
+
+            /* ── Individual item ── */
+            .ticker-item {
+                display: inline-flex;
+                align-items: center;
+                font-family: var(--font-ticker);
+                font-size: 1.5rem;
+                font-weight: 500;
+                color: var(--strip-color);
+                padding: 0 24px;
+                height: var(--ticker-height);
+                line-height: var(--ticker-height);
+                letter-spacing: 0.3px;
+            }
+
+            /* Diamond separator between items */
+            .ticker-separator {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 20px;
+                height: var(--ticker-height);
+                color: var(--separator-color);
+                font-size: 0.65rem;
+                opacity: 0.9;
+            }
+
+            .ticker-separator::before {
+                content: '◆';
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="ticker-bar" id="ticker_bar">
+                <div class="ticker-label" id="ticker_label">ሐምለ 05,2018</div>
+                <div class="ticker-strip">
+                    <div class="ticker-track" id="ticker_track">
+                        <!-- Items are duplicated for seamless loop -->
+                        <span class="ticker-item">እንኳን ወደ ኢየሱስ ቤተ ክርስቲያን በደህና መጡ</span>
+                        <span class="ticker-separator"></span>
+                        <span class="ticker-item">የዛሬው የአምልኮ ፕሮግራም በ2:00 ሰዓት ይጀምራል</span>
+                        <span class="ticker-separator"></span>
+                        <span class="ticker-item">የጸሎት ስብሰባ በየዕለቱ ማታ 8 ሰዓት</span>
+                        <span class="ticker-separator"></span>
+                        <!-- Duplicate for seamless loop -->
+                        <span class="ticker-item">እንኳን ወደ ኢየሱስ ቤተ ክርስቲያን በደህና መጡ</span>
+                        <span class="ticker-separator"></span>
+                        <span class="ticker-item">የዛሬው የአምልኮ ፕሮግራም በ2:00 ሰዓት ይጀምራል</span>
+                        <span class="ticker-separator"></span>
+                        <span class="ticker-item">የጸሎት ስብሰባ በየዕለቱ ማታ 8 ሰዓት</span>
+                        <span class="ticker-separator"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        const tickerBar = document.getElementById('ticker_bar');
+        const tickerTrack = document.getElementById('ticker_track');
+        const tickerLabel = document.getElementById('ticker_label');
+        const ethiopianDateFormatter = new Intl.DateTimeFormat('am-ET-u-ca-ethiopic', {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric',
+            timeZone: 'Africa/Addis_Ababa'
+        });
+        let customTickerLabel = '';
+
+        function updateTickerLabel() {
+            const dateParts = Object.fromEntries(
+                ethiopianDateFormatter.formatToParts(new Date())
+                    .map(part => [part.type, part.value])
+            );
+            const ethiopianDate = `${dateParts.month} ${Number(dateParts.day)}/${dateParts.year} ዓ.ም`;
+            tickerLabel.textContent = customTickerLabel || ethiopianDate;
+        }
+
+        updateTickerLabel();
+        setInterval(updateTickerLabel, 60 * 1000);
+
+        /**
+         * Build ticker items from an array of strings.
+         * Duplicates the set once for seamless CSS-only looping.
+         */
+        function buildTickerItems(items) {
+            tickerTrack.innerHTML = '';
+
+            // We need two copies of the items for seamless wrapping
+            const allItems = [...items, ...items];
+
+            allItems.forEach((text, i) => {
+                const item = document.createElement('span');
+                item.className = 'ticker-item';
+                item.textContent = text;
+                tickerTrack.appendChild(item);
+
+                // Add separator after each item
+                const sep = document.createElement('span');
+                sep.className = 'ticker-separator';
+                tickerTrack.appendChild(sep);
+            });
+
+            // Dynamically adjust speed based on content length
+            adjustSpeed();
+        }
+
+        /**
+         * Auto-adjust scroll speed based on content width
+         * so longer content doesn't fly by too fast.
+         */
+        function adjustSpeed() {
+            requestAnimationFrame(() => {
+                const trackWidth = tickerTrack.scrollWidth / 2; // half because duplicated
+                const pixelsPerSecond = 80; // consistent speed
+                const duration = trackWidth / pixelsPerSecond;
+                tickerTrack.style.animationDuration = `${Math.max(duration, 10)}s`;
+            });
+        }
+
+        // Show / hide ticker
+        function showTicker() {
+            tickerBar.classList.add('active');
+        }
+
+        function hideTicker() {
+            tickerBar.classList.remove('active');
+        }
+
+        // Socket commands
+        socket.on("receive_command", (data) => {
+            if (data.cmd === "caption_sequence") {
+                if (typeof data.label === 'string') {
+                    customTickerLabel = data.label.trim();
+                    updateTickerLabel();
+                }
+                if (data.sequence && Array.isArray(data.sequence)) {
+                    buildTickerItems(data.sequence.map((item) => item.name));
+                }
+            } else if (data.cmd === "caption_in") {
+                // data.items = array of ticker strings
+                // data.label = optional label text (e.g. "ዜና", "BREAKING", "ማስታወቂያ")
+                if (data.items && Array.isArray(data.items)) {
+                    buildTickerItems(data.items);
+                }
+                if (typeof data.label === 'string') {
+                    customTickerLabel = data.label.trim();
+                }
+                updateTickerLabel();
+                showTicker();
+            } else if (data.cmd === "caption_out") {
+                hideTicker();
+            }
+        });
+
+        // get caption data from server on load
+        socket.emit("receive_command", { cmd: "caption_sequence" }
+        , (data) => {
+            
+        
+            console.log("Requesting caption sequence from server...", data);
+            }
+
+        );
+
+    </script>
+</html>
+ 

@@ -1,0 +1,153 @@
+.plugin_nav {
+    position: relative;
+}
+
+.plugin_nav .presentation_extend {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.55rem 0.9rem;
+    margin-left: 0.35rem;
+    border: 1px solid rgba(245, 195, 15, 0.45);
+    border-radius: 999px;
+    background: linear-gradient(135deg, rgba(245, 195, 15, 0.2), rgba(16, 185, 129, 0.16));
+    color: #fff;
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.plugin_nav .presentation_extend:hover,
+.plugin_nav .presentation_extend:focus-visible {
+    border-color: rgba(245, 195, 15, 0.8);
+    background: linear-gradient(135deg, rgba(245, 195, 15, 0.32), rgba(16, 185, 129, 0.26));
+    outline: none;
+}
+
+.presentation_status {
+    position: absolute;
+    z-index: 10;
+    top: 100%;
+    right: 1rem;
+    max-width: min(28rem, calc(100vw - 2rem));
+    padding: 0.6rem 0.85rem;
+    border: 1px solid rgba(245, 195, 15, 0.35);
+    border-radius: 0.65rem;
+    background: #111827;
+    color: #edf4ff;
+    font-size: 0.82rem;
+    box-shadow: 0 0.6rem 1.5rem rgba(0, 0, 0, 0.3);
+}
+
+.presentation_status[hidden] {
+    display: none;
+}
+
+.presentation_dialog {
+    width: min(30rem, calc(100vw - 2rem));
+    max-height: min(80vh, 38rem);
+    padding: 1.15rem;
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    border-radius: 1rem;
+    background: #111827;
+    color: #edf4ff;
+    box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.55);
+}
+
+.presentation_dialog::backdrop {
+    background: rgba(3, 7, 18, 0.72);
+    backdrop-filter: blur(4px);
+}
+
+.presentation_dialog_header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.presentation_dialog_header h2 {
+    margin: 0;
+    font-size: 1.15rem;
+}
+
+.presentation_dialog_header p {
+    margin: 0.35rem 0 0;
+    color: #cbd5e1;
+    font-size: 0.88rem;
+    line-height: 1.45;
+}
+
+.presentation_dialog_close,
+.presentation_manual_open {
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    border-radius: 0.6rem;
+    background: rgba(255, 255, 255, 0.06);
+    color: #edf4ff;
+    cursor: pointer;
+    font: inherit;
+}
+
+.presentation_dialog_close {
+    width: 2rem;
+    height: 2rem;
+    font-size: 1.35rem;
+    line-height: 1;
+}
+
+.presentation_display_list {
+    display: grid;
+    gap: 0.55rem;
+}
+
+.presentation_display_option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    width: 100%;
+    padding: 0.85rem 0.95rem;
+    border: 1px solid rgba(148, 163, 184, 0.23);
+    border-radius: 0.7rem;
+    background: rgba(255, 255, 255, 0.04);
+    color: #edf4ff;
+    cursor: pointer;
+    font: inherit;
+    text-align: left;
+}
+
+.presentation_display_option:hover,
+.presentation_display_option:focus-visible,
+.presentation_manual_open:hover,
+.presentation_manual_open:focus-visible {
+    border-color: rgba(245, 195, 15, 0.7);
+    background: rgba(245, 195, 15, 0.1);
+    outline: none;
+}
+
+.presentation_display_name {
+    font-weight: 650;
+}
+
+.presentation_display_resolution {
+    color: #cbd5e1;
+    font-size: 0.82rem;
+}
+
+.presentation_dialog_footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 0.8rem;
+}
+
+.presentation_manual_open {
+    padding: 0.55rem 0.75rem;
+    font-size: 0.85rem;
+}
+
+.presentation_manual_open[hidden] {
+    display: none;
+}

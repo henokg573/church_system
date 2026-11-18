@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Player</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+    <div class="title_bar">Media Player</div>
+    <div class="media_player_container">
+        <div class="file_explorer" id="file_explorer">
+            <div class="file_container" id="file_container">
+                
+            </div>
+        </div>
+        <div class="media_control_btn">
+            <div class="previous_btn media_btn" id="previous_btn">
+                    <img src="icon/next-svgrepo-com.svg">
+            </div>
+            <div class="play_pause_btn media_btn" id="play_pause_btn">
+                <img src="icon/play-circle-svgrepo-com.svg">
+            </div>
+            <div class="next_btn media_btn" id="next_btn">
+                <img src="icon/next-svgrepo-com.svg">
+            </div>
+            <div class="stop_btn media_btn" id="stop_btn">
+                <img src="icon/stop-circle-fill-svgrepo-com.svg">
+            </div>
+        </div>
+        <div class="add_btn" id="add_btn">+</div>
+        <input type="file" id="file_input" accept="video/*,audio/*,image/*" hidden>
+    </div>
+    
+</body>
+<script src="/socket.io/socket.io.js"></script>
+<script src="js/main.js"></script>
+</html>

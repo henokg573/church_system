@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Side Bar Advert</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            width: 1920px;
+            height: 1080px;
+        }
+
+        .container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: max-content;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .side-bar {
+            width: 500px; /* Adjust the width as needed */
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .side-bar img {
+            border-radius: 1.5rem;
+            max-width: 400px;
+        }
+        .advert_image {
+            opacity: 0;
+            transform: translate3d(-120%, 0, 0);
+            transition:
+                transform 900ms cubic-bezier(0.22, 1, 0.36, 1),
+                opacity 700ms ease;
+            will-change: transform, opacity;
+        }
+        .advert_image.active {
+            opacity: 1;
+            transform: translate3d(0, 0, 0);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="side-bar">
+           <img src="light_mode.jpg" alt="Side Bar Advert" class="advert_image" id="advert_image"/>
+        </div>
+    </div>
+</body>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    const socket = io();
+    const advertImage = document.getElementById('advert_image');
+    let advertTimers = [];
+
+    socket.on('receive_command', (data) => {
+        if (data.cmd === 'advert_image_in') {
+            advertTimers.forEach(clearTimeout);
+            advertTimers = [];
+            advertImage.src = "light_mode.jpg";
+            advertImage.classList.add('active');
+
+            advertTimers.push(setTimeout(() => {
+                advertImage.classList.remove('active');
+
+                advertTimers.push(setTimeout(() => {
+                    advertImage.src = "one_voice.jpg";
+                    advertImage.classList.add('active');
+                    advertTimers.push(setTimeout(() => {
+                        advertImage.classList.remove('active');
+                    }, 3500));
+                }, 900));
+            }, 3500));
+        }
+    });
+</script>
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nameplate</title>
+    <style>
+        :root{
+            --color-dark: #161617;
+            --color-dark2: #232323;
+            --color-light: #f4f4f4;
+            --color-accent: #484d53;
+            --color-orange: #f8993f;
+            --color-red: #ff4d4d;
+            --color-green: #33cc33;
+        }
+        @font-face {
+            font-family: 'BelaBereka';
+            src: url('../../font/BelaBereka.ttf');
+            font-weight: normal;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Agbalumo';
+            src: url('../../font/Agbalumo-Regular.ttf');
+            font-weight: normal;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Menbere';
+            src: url('../../font/Menbere-VariableFont_wght.ttf');
+            font-weight: normal;
+            font-style: normal;
+        }
+        *{
+            margin: 0;
+            padding:0;
+            box-sizing: border-box;
+        }
+        body{
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            width: 1920px;
+            height: 1080px;
+            color: var(--color-light);
+            position: relative;
+            overflow: hidden;
+        }
+        .container{
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .name_plate{
+            position: absolute;
+            bottom:-200px;
+            left: 30px;
+            background-color: rgb(30, 30, 30);
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            min-width: 25rem;
+            margin-left: 2.5rem;
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+            width: max-content;
+            height: max-content;
+            transition: 0.6s ease-in-out;
+        }
+        .name_plate.active{
+            bottom:150px;
+        }
+        .name_plate .name{
+            font-family: 'Agbalumo';
+            font-size: 3rem;
+            font-weight: normal;
+            color: var(--color-orange);
+        }
+        .name_plate .title{
+            font-family: 'Menbere';
+            font-size: 1.5rem;
+            font-weight: normal;
+            color: var(--color-orange);
+            margin-top: 0;
+        }
+        #click{
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100px;
+            height: 100px;
+            z-index:100;
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="container">
+        <div class="name_plate" id="name_plate">
+            <div class="name" id="name">አበበ ከበደ አበበ ከበደ</div>
+            <div class="title" id="title">ዘማሪ</div>
+        </div>
+    </div>
+</body>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        const nameplate = document.getElementById("name_plate");
+        const name=document.getElementById("name");
+        const title=document.getElementById("title");
+        
+        // receive command from server
+        socket.on("receive_command", (data) => {
+            //console.log(data);
+            if(data.cmd=="name_plate_in")
+            {
+                name.innerHTML=data.name;
+                title.innerHTML=data.title;
+                nameplate.classList.add("active");
+            }
+            else if(data.cmd=="name_plate_out")
+            {
+                nameplate.classList.remove("active");
+            }
+        });
+    </script>
+</html>

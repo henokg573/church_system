@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bible Verse</title>
+    <style>
+        :root{
+            --color-dark: #161617;
+            --color-dark2: #232323;
+            --color-light: #f4f4f4;
+            --color-accent: #484d53;
+            --color-orange: #f8993f;
+            --color-red: #ff4d4d;
+            --color-green: #33cc33;
+        }
+        @font-face {
+            font-family: 'BelaBereka';
+            src: url('../../font/BelaBereka.ttf');
+            font-weight: normal;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Agbalumo';
+            src: url('../../font/Agbalumo-Regular.ttf');
+            font-weight: normal;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Menbere';
+            src: url('../../font/Menbere-VariableFont_wght.ttf');
+            font-weight: normal;
+            font-style: normal;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body{
+            position: absolute;
+            top:0;
+            left:0;
+            width: 1920px;
+            height: 1080px;
+        }
+        .container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #lyric_text{
+            display: none;
+            font-family: Agbalumo;
+            font-size: 2.5rem;
+            font-weight: bold;
+            text-align: center;
+            color: #090909;
+        }
+        #lyric_text_mini{
+            position: absolute;
+
+            bottom:10%;
+            left:50%;
+            transform: translateX(-50%);
+            font-family: Agbalumo;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            
+        }
+        #lyric_text_mini div{
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.0rem;
+            font-weight: bold;
+            text-align: center;
+            color: #ffffff;
+            background-color: rgba(0,0,0, 0.7);
+            width: max-content;
+            height: max-content;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 5px;
+            margin-bottom: 5px;
+            padding: 5px 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+    <body>
+        <div class="container" id="container_01">
+            <div id="lyric_text"></div>
+            <div id="lyric_text_mini"></div>
+        </div>
+    </body>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        let is_visible = false;
+        const socket = io();
+        const lyric_text_mini = document.getElementById("lyric_text_mini");
+
+        socket.on("receive_command", (data) => {
+            if (data?.cmd === "song_lyric_tv") {
+                displayLegacyLyrics(data.lyric);
+            }
+        }); 
+
+        socket.on("receive_command", (data) => {
+            if (data?.cmd === "lyric_mini_in" || data?.cmd === "lyric_in") {
+                is_visible = true;
+                lyric_text_mini.style.display = "flex";
+            } else if (data?.cmd === "lyric_mini_out" || data?.cmd === "lyric_out") {
+                is_visible = false;
+                lyric_text_mini.style.display = "none";
+            }
+        });
+
+        function renderLines(lines) {
+            lyric_text_mini.replaceChildren();
+            lines.forEach(line => {
+                const lineElement = document.createElement("div");
+                lineElement.textContent = line;
+                lyric_text_mini.appendChild(lineElement);
+            });
+            if (is_visible) lyric_text_mini.style.display = "flex";
+        }
+
+        function displayLegacyLyrics(lyric) {
+            if (Array.isArray(lyric)) {
+                renderLines(lyric.filter(line => typeof line === "string"));
+                return;
+            }
+            if (typeof lyric !== "string") return;
+            const template = document.createElement("template");
+            template.innerHTML = lyric;
+            const lines = [...template.content.querySelectorAll("div")]
+                .filter(element => !element.querySelector("div"))
+                .map(element => element.textContent.trim())
+                .filter(Boolean);
+            renderLines(lines.length ? lines : lyric.split(/\r?\n/).filter(line => line.trim()));
+        }
+            
+    </script>
+</html> 

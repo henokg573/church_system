@@ -1,0 +1,23 @@
+{
+  "name": "church_system",
+  "version": "1.0.0",
+  "description": "Church Presentation and automation system",
+  "keywords": [
+    "church"
+  ],
+  "license": "ISC",
+  "author": "Ashenafi Tadesse",
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "test": "node server.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^13.0.3",
+    "express": "^5.3.0",
+    "fast-xml-parser": "^5.11.2",
+    "multer": "^2.0.2",
+    "obs-websocket-js": "^5.0.8",
+    "socket.io": "^4.8.4"
+  }
+}

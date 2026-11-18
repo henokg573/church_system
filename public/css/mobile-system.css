@@ -1,0 +1,108 @@
+.mobile_tool_menu,
+.mobile_tool_view_nav {
+    display: none;
+}
+
+@media (max-width: 600px) {
+    .mobile_tool_menu {
+        position: relative;
+        z-index: 50;
+        display: block;
+    }
+
+    .mobile_tool_menu summary {
+        display: inline-flex;
+        min-height: 40px;
+        align-items: center;
+        gap: 7px;
+        padding: 0 11px;
+        border: 1px solid rgba(148, 163, 184, 0.24);
+        border-radius: 9px;
+        background: rgba(255,255,255,0.06);
+        color: #edf4ff;
+        font-size: 0.82rem;
+        font-weight: 650;
+        list-style: none;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .mobile_tool_menu summary::-webkit-details-marker {
+        display: none;
+    }
+
+    .mobile_tool_menu summary i {
+        font-size: 1.05rem;
+    }
+
+    .mobile_tool_menu_panel {
+        position: absolute;
+        top: calc(100% + 8px);
+        left: 0;
+        right: auto;
+        display: grid;
+        width: min(260px, calc(100vw - 24px));
+        gap: 3px;
+        padding: 7px;
+        border: 1px solid rgba(148, 163, 184, 0.22);
+        border-radius: 11px;
+        background: #111827;
+        box-shadow: 0 16px 36px rgba(0,0,0,0.48);
+    }
+
+    .mobile_tool_menu_panel a {
+        display: flex;
+        min-height: 44px;
+        align-items: center;
+        gap: 10px;
+        padding: 0 11px;
+        border-radius: 7px;
+        color: #edf4ff;
+        font-size: 0.84rem;
+        text-decoration: none;
+    }
+
+    .mobile_tool_menu_panel a:hover,
+    .mobile_tool_menu_panel a:focus-visible {
+        outline: none;
+        background: rgba(96, 165, 250, 0.14);
+        color: #fff;
+    }
+
+    .mobile_tool_view_nav {
+        display: grid;
+        min-height: 62px;
+        flex: 0 0 auto;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 4px;
+        padding: 5px 10px max(5px, env(safe-area-inset-bottom));
+        border-top: 1px solid rgba(148, 163, 184, 0.18);
+        background: #0c1220;
+    }
+
+    .mobile_tool_view_nav button {
+        display: flex;
+        min-width: 0;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        border: 0;
+        border-radius: 8px;
+        background: transparent;
+        color: #aebbd0;
+        font: inherit;
+        font-size: 0.66rem;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .mobile_tool_view_nav button i {
+        font-size: 1.05rem;
+    }
+
+    .mobile_tool_view_nav button.active {
+        background: rgba(96, 165, 250, 0.12);
+        color: #93c5fd;
+    }
+}

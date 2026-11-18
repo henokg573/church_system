@@ -1,0 +1,711 @@
+:root {
+    color-scheme: dark;
+    --mobile-bg: #171b1a;
+    --mobile-panel: #202624;
+    --mobile-raised: #29312e;
+    --mobile-border: #38433e;
+    --mobile-text: #f0f3ef;
+    --mobile-muted: #a2ada6;
+    --mobile-accent: #7bd0a7;
+    --mobile-accent-dark: #174a39;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    margin: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--mobile-bg);
+    color: var(--mobile-text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    -webkit-tap-highlight-color: transparent;
+}
+
+button,
+input,
+select {
+    font: inherit;
+}
+
+button {
+    color: inherit;
+}
+
+.mobile_header {
+    display: grid;
+    grid-template-columns: 38px minmax(0, 1fr) minmax(100px, 42%);
+    flex-shrink: 0;
+    align-items: center;
+    gap: 8px;
+    min-height: 76px;
+    padding: 10px;
+    padding-top: max(10px, env(safe-area-inset-top));
+    background: #122e2a;
+    border-bottom: 1px solid #315149;
+}
+
+.mobile_menu_wrap {
+    position: relative;
+    z-index: 20;
+}
+
+.mobile_menu_button {
+    display: grid;
+    width: 38px;
+    height: 42px;
+    place-items: center;
+    border: 1px solid #416459;
+    border-radius: 9px;
+    background: #1b3a33;
+    color: var(--mobile-text);
+    font-size: 21px;
+}
+
+.mobile_system_menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    display: grid;
+    width: min(260px, calc(100vw - 24px));
+    gap: 3px;
+    padding: 7px;
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    border-radius: 11px;
+    background: #111827;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.48);
+}
+
+.mobile_system_menu[hidden] {
+    display: none;
+}
+
+.mobile_system_menu a {
+    display: flex;
+    min-height: 44px;
+    align-items: center;
+    gap: 10px;
+    padding: 0 11px;
+    border-radius: 7px;
+    color: var(--mobile-text);
+    font-size: 13px;
+    text-decoration: none;
+}
+
+.mobile_system_menu a:hover,
+.mobile_system_menu a:focus-visible {
+    outline: none;
+    background: #293a32;
+    color: #b8efce;
+}
+
+.brand {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 7px;
+}
+
+.brand_icon {
+    display: grid;
+    width: 38px;
+    height: 38px;
+    flex: 0 0 38px;
+    place-items: center;
+    border: 1px solid #4a7767;
+    border-radius: 10px;
+    color: var(--mobile-accent);
+    font-size: 19px;
+}
+
+.brand h1 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 650;
+}
+
+.brand p {
+    margin: 3px 0 0;
+    color: #b2c5bb;
+    font-size: 11px;
+}
+
+.translation_picker {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 4px;
+    justify-self: stretch;
+    color: #b2c5bb;
+    font-size: 10px;
+}
+
+.translation_picker select {
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    height: 34px;
+    padding: 0 8px;
+    border: 1px solid #416459;
+    border-radius: 6px;
+    background: #1b3a33;
+    color: var(--mobile-text);
+    font-size: 12px;
+}
+
+.mobile_workspace {
+    position: relative;
+    display: flex;
+    width: 100%;
+    max-width: 600px;
+    min-height: 0;
+    flex: 1;
+    align-self: center;
+    overflow: hidden;
+    background: var(--mobile-bg);
+}
+
+.mobile_page {
+    display: none;
+    width: 100%;
+    min-height: 0;
+    flex-direction: column;
+}
+
+body[data-mobile-page="bible"] #mobile_bible_page,
+body[data-mobile-page="library"] #mobile_library_page {
+    display: flex;
+}
+
+body[data-mobile-page="books"] #mobile_books_page {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 64px;
+    grid-template-rows: minmax(0, 1fr);
+}
+
+.book_browser {
+    flex-shrink: 0;
+    padding: 10px 12px 0;
+}
+
+.mobile_books_page .book_browser {
+    display: flex;
+    min-height: 0;
+    flex-direction: column;
+    padding: 10px 8px 12px 12px;
+}
+
+.chapter_browser {
+    display: flex;
+    min-width: 0;
+    min-height: 0;
+    flex-direction: column;
+}
+
+.mobile_books_page .books_list {
+    height: auto;
+    min-height: 0;
+    flex: 1;
+}
+
+.chapter_picker_header {
+    flex-shrink: 0;
+    padding: 14px 0 7px;
+    border-bottom: 1px solid var(--mobile-border);
+    color: var(--mobile-muted);
+    font-size: 10px;
+    font-weight: 650;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.mobile_books_page .chapter_number {
+    min-height: 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: center;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 8px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--mobile-border) transparent;
+}
+
+.mobile_books_page .chapter_number span {
+    width: 40px;
+    height: 40px;
+    flex: 0 0 40px;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.mobile_books_page .books_list ul {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.mobile_testament_tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    padding: 3px;
+    border: 1px solid var(--mobile-border);
+    border-radius: 8px;
+    background: var(--mobile-panel);
+}
+
+.mobile_testament_tabs button {
+    min-height: 34px;
+    padding: 6px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--mobile-muted);
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.mobile_testament_tabs button.active {
+    background: var(--mobile-accent-dark);
+    color: #d9f5e5;
+}
+
+.books_list {
+    height: 94px;
+    margin-top: 7px;
+    overflow: hidden;
+}
+
+.books_list > div {
+    display: none;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--mobile-border) transparent;
+}
+
+.books_list[data-testament="old"] .books_old,
+.books_list[data-testament="new"] .books_new {
+    display: block;
+}
+
+.books_list ul {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.books_list ul li {
+    min-height: 32px;
+    padding: 7px 8px;
+    overflow: hidden;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    color: #d4dbd6;
+    font-size: 12px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.books_list ul li.active {
+    border-color: #38735a;
+    background: #1d4334;
+    color: #a9ebc5;
+}
+
+.chapter_number {
+    display: flex;
+    min-height: 48px;
+    flex-shrink: 0;
+    gap: 6px;
+    align-items: center;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 7px 12px;
+    scrollbar-width: none;
+}
+
+.chapter_number::-webkit-scrollbar {
+    display: none;
+}
+
+.chapter_number span {
+    display: grid;
+    width: 34px;
+    height: 34px;
+    flex: 0 0 34px;
+    place-items: center;
+    border: 1px solid var(--mobile-border);
+    border-radius: 6px;
+    background: var(--mobile-panel);
+    color: #d3dbd5;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.chapter_number span.active {
+    border-color: var(--mobile-accent);
+    background: var(--mobile-accent-dark);
+    color: #c8f1d9;
+}
+
+.selected_chapter {
+    display: flex;
+    min-height: 42px;
+    flex-shrink: 0;
+    align-items: center;
+    margin: 0;
+    padding: 0 16px;
+    border-top: 1px solid var(--mobile-border);
+    color: #dce5de;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.versus_list {
+    min-height: 0;
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 12px 12px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--mobile-border) transparent;
+}
+
+.versus_list > .verse {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 9px;
+    border-bottom: 1px solid #303936;
+    color: #e3e8e4;
+    font-size: 15px;
+    line-height: 1.6;
+    cursor: pointer;
+}
+
+.versus_list > .verse > span:first-child {
+    min-width: 22px;
+    padding-top: 2px;
+    color: var(--mobile-accent);
+    font-size: 11px;
+    font-weight: 700;
+    text-align: right;
+}
+
+.versus_list > .verse.active {
+    border-radius: 6px;
+    background: #20372d;
+}
+
+.controls_btn {
+    display: grid;
+    min-height: 58px;
+    flex-shrink: 0;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 7px;
+    padding: 8px 12px;
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
+    border-top: 1px solid var(--mobile-border);
+    background: var(--mobile-panel);
+}
+
+.controls_btn button {
+    display: flex;
+    min-width: 0;
+    min-height: 40px;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 4px;
+    border: 1px solid var(--mobile-border);
+    border-radius: 6px;
+    background: var(--mobile-raised);
+    color: var(--mobile-text);
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.controls_btn button i {
+    font-size: 13px;
+}
+
+.controls_btn button.btn_show.active {
+    border-color: #a94b4b;
+    background: #622e30;
+}
+
+.mobile_library_page {
+    padding: 12px;
+}
+
+.mobile_library_panel {
+    display: flex;
+    width: 100%;
+    min-height: 0;
+    flex: 1;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 0;
+    border: 1px solid var(--mobile-border);
+    border-radius: 8px;
+    background: var(--mobile-panel);
+}
+
+.queue_tabs {
+    display: grid;
+    min-height: 48px;
+    flex-shrink: 0;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 4px;
+    margin: 0;
+    padding: 7px;
+    border-bottom: 1px solid var(--mobile-border);
+}
+
+.queue_tab {
+    min-width: 0;
+    padding: 6px 2px;
+    border: 0;
+    border-radius: 5px;
+    background: transparent;
+    color: var(--mobile-muted);
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.queue_tab.active {
+    background: var(--mobile-accent-dark);
+    color: #d9f5e5;
+}
+
+#queue_list,
+#history_list,
+#search_results {
+    min-height: 0;
+    flex: 1;
+    flex-direction: column;
+    gap: 6px;
+    overflow-y: auto;
+    margin: 0;
+    padding: 10px;
+    list-style: none;
+}
+
+#queue_list,
+#history_list {
+    display: flex;
+}
+
+#queue_list li,
+#history_list li {
+    display: flex;
+    min-height: 52px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 9px 10px;
+    border: 1px solid var(--mobile-border);
+    border-radius: 6px;
+    background: #1a201e;
+    font-size: 13px;
+}
+
+#queue_list li.active {
+    border-color: #477d62;
+    background: #20372d;
+}
+
+#search_container {
+    min-height: 0;
+    flex: 1;
+    flex-direction: column;
+    gap: 9px;
+    padding: 10px;
+}
+
+.bible_search_form {
+    display: flex;
+    flex-shrink: 0;
+    gap: 7px;
+}
+
+#bible_search_input {
+    width: 0;
+    min-height: 42px;
+    flex: 1;
+    padding: 0 11px;
+    border: 1px solid var(--mobile-border);
+    border-radius: 6px;
+    outline: none;
+    background: #171d1a;
+    color: var(--mobile-text);
+    font-size: 14px;
+}
+
+#bible_search_input:focus {
+    border-color: var(--mobile-accent);
+}
+
+.bible_search_button {
+    width: 44px;
+    border: 0;
+    border-radius: 6px;
+    background: var(--mobile-accent-dark);
+    color: #d9f5e5;
+    font-size: 16px;
+}
+
+#bible_search_status {
+    color: var(--mobile-muted);
+    font-size: 12px;
+}
+
+#search_results {
+    display: flex;
+    padding: 0;
+}
+
+#search_results li button {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+    padding: 11px;
+    border: 1px solid var(--mobile-border);
+    border-radius: 6px;
+    background: #1a201e;
+    color: var(--mobile-text);
+    text-align: left;
+}
+
+.search_result_reference {
+    color: var(--mobile-accent);
+    font-size: 12px;
+    font-weight: 650;
+}
+
+.search_result_text {
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.search_result_text mark {
+    border-radius: 2px;
+    background: var(--mobile-accent);
+    color: #13251b;
+}
+
+#property_container {
+    min-height: 0;
+    flex: 1;
+}
+
+#property_container iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
+.mobile_navigation {
+    display: grid;
+    min-height: 58px;
+    flex-shrink: 0;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    padding: 5px 12px;
+    padding-bottom: max(5px, env(safe-area-inset-bottom));
+    border-top: 1px solid var(--mobile-border);
+    background: #121715;
+}
+
+.mobile_navigation button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--mobile-muted);
+    font-size: 10px;
+}
+
+.mobile_navigation button i {
+    font-size: 17px;
+}
+
+.mobile_navigation button.active {
+    color: var(--mobile-accent);
+}
+
+@media (min-width: 600px) {
+    .mobile_workspace {
+        border-right: 1px solid var(--mobile-border);
+        border-left: 1px solid var(--mobile-border);
+    }
+}
+
+@media (max-height: 650px) {
+    .mobile_header {
+        min-height: 64px;
+        padding-top: max(6px, env(safe-area-inset-top));
+        padding-bottom: 6px;
+    }
+
+    .books_list {
+        height: 70px;
+    }
+
+    .book_browser {
+        padding-top: 6px;
+    }
+
+    .selected_chapter {
+        min-height: 34px;
+    }
+}
+
+@media (max-width: 380px) {
+    .mobile_header {
+        grid-template-columns: 36px minmax(0, 1fr) minmax(92px, 40%);
+        gap: 6px;
+        padding-right: 8px;
+        padding-left: 8px;
+    }
+
+    .brand_icon {
+        display: none;
+    }
+
+    .brand h1 {
+        font-size: 13px;
+    }
+
+    .brand p {
+        font-size: 10px;
+    }
+
+    .translation_picker select {
+        padding: 0 5px;
+        font-size: 10px;
+    }
+}

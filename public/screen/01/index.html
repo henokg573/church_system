@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>  
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main Screen</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+    <div class="container">
+        <div class="wallpaper-layer" id="wallpaper_layer" aria-hidden="true">
+            <img id="wallpaper_image" alt="" hidden>
+            <video id="wallpaper_video" autoplay muted loop playsinline hidden></video>
+            <div id="wallpaper_text" hidden>
+                <img class="wallpaper_text_background" id="wallpaper_text_image" alt="" hidden>
+                <video class="wallpaper_text_background" id="wallpaper_text_video" autoplay muted loop playsinline hidden></video>
+                <div class="wallpaper_text_content" id="wallpaper_text_content" data-position="center">
+                    <div class="wallpaper_words"></div>
+                    <div class="wallpaper_subtitle"></div>
+                </div>
+            </div>
+        </div>
+        <iframe id="lyrics_iframe" src="/plugin/lyrics/main/index.html" title="Projected lyrics"></iframe>
+        <iframe id="bible_iframe" src="/plugin/bible/main" frameborder="0"></iframe>
+        <iframe id="timer_iframe" src="/plugin/timer/screen/index.html" title="Timer screen" hidden></iframe>
+        <iframe id="presenter_iframe" src="/plugin/presenter/display.html" title="Presenter screen" hidden></iframe>
+    </div>
+</body>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src='js/main.js'></script>
+</html>

@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Bible Browser Portrait</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.css" integrity="sha384-Bk5cbLkZQ5raZ0+H2/+VbfYx3WpvxvQK4zqXZr7sYODuaX7bKXoSOnipQxkaS8sv" crossorigin="anonymous">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=Lobster&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+        <style>
+            @font-face {
+                font-family: "Amhara";
+                src: url("/fonts/Amhara_reduced.otf") format("opentype");
+                font-weight: 400;
+                font-style: normal;
+            }
+            @font-face {
+                font-family: "Agbalumo";
+                src: url("/fonts/Agbalumo_Regular.ttf") format("truetype");
+                font-weight: 400;
+                font-style: normal;
+            }
+            @font-face {
+                font-family: "BelaBreka";
+                src: url("/fonts/Bela_Bereka.ttf") format("truetype");
+                font-weight: 400;
+                font-style: normal;
+            }
+            @font-face {
+                font-family: "Benaiah";
+                src: url("/fonts/Benaiah.ttf") format("truetype");
+                font-weight: 400;
+                font-style: normal;
+            }
+            @font-face {
+                font-family: "Bebas Neue";
+                src: url("/fonts/BebasNeue-Regular.ttf") format("truetype");
+                font-weight: 400;
+                font-style: normal;
+            }
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            body {
+                position: relative;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 1080px;
+                height: 1920px;
+                background-color: #000;
+                overflow: hidden;
+            }
+            .container{
+                width: 100%;
+                height: 100%;
+                position: relative;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+            .qoute_holder{
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 82%;
+                max-width: 82%;
+                height: auto;
+                max-height: 68vh;
+                min-height: 20vh;
+                margin: 0 auto;
+                padding: 2.2rem 2.5rem;
+                display: flex;
+                flex-direction: column;
+                gap: 1.8rem;
+                border-radius: 2rem;
+                justify-content: center;
+                align-items: center;
+                box-sizing: border-box;
+                overflow: hidden;
+            }
+            .mini_background{
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                top: 0;
+                left: 0;
+                background-color: rgba(0, 0, 0, 0.5);
+                z-index: 0;
+                overflow: hidden;
+            }
+            .mini_bg_video {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                top: 0;
+                left: 0;
+                object-fit: cover;
+                z-index: 0;
+            }
+            .mini_bg_image {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                top: 0;
+                left: 0;
+                object-fit: cover;
+                z-index: 0;
+            }
+            .qoute{
+                position: relative;
+                z-index: 1;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 100%;
+                height: auto;
+                font-size: 3rem;
+                font-weight: 400;
+                font-family: 'Amhara', sans-serif;
+                color: white;
+                text-align: center;
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+                line-height: 1.45;
+            }
+            .qoute_reference{
+                position: relative;
+                z-index: 1;
+                width: max-content;
+                height: max-content;
+                font-size: 1.8rem;
+                font-weight: 600;
+                font-family: 'Amhara', sans-serif;
+                color: white;
+                text-align: center;
+                flex-shrink: 0;
+            }
+        </style>
+        <style id="dynamic_custom_fonts"></style>
+    </head>
+    <body>
+        <div class="container" id="container">
+            <img class="background" id="background" style="display:none;position:absolute;width:100%;height:100%;top:0;left:0;object-fit:cover;z-index:0" />
+            <video id="video" autoplay muted loop style="display:none;position:absolute;width:100%;height:100%;top:0;left:0;object-fit:cover;z-index:0">
+                <source id="main_video_src" src="" type="video/mp4">
+            </video>
+
+            <div class="qoute_holder" id="qoute_holder">
+                <div class="mini_background" id="mini_background">
+                    <img class="mini_bg_image" id="mini_bg_image" src="" style="display:none">
+                    <video class="mini_bg_video" id="mini_bg_video" autoplay muted loop style="display:none"><source id="mini_bg_video_src" src="" type="video/mp4"></video>
+                </div>
+                <div class="qoute" id="qoute">"For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life."</div>
+                <div class="qoute_reference" id="qoute_reference">John 3:16</div>
+            </div>
+        </div>
+    </body>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        const graphicProps = {
+            quoteColor: '#ffffff', refColor: '#ffffff',
+            minFontSize: 1.2, maxFontSize: 4.0,
+            quoteFontFamily: 'Amhara',
+            refFontFamily: 'Amhara',
+            quoteFontWeight: '400',
+            refFontWeight: '600',
+            refFontSize: 1.8,
+            mainBgType: 'none',
+            mainBgColor: '#000000',
+            mainGradC1: '#0d0d0d', mainGradC2: '#1a1a2e', mainGradC3: '#16213e',
+            mainGradAngle: 160,
+            mainImgUrl: '', mainImgFit: 'cover',
+            mainVidUrl: '',
+            mainBgOpacity: 100,
+            miniBgShow: true, miniBgType: 'color',
+            miniBgColor: '#a52a2a', miniBgOpacity: 85, miniBgRadius: 32, miniBgBlur: 0,
+            gradColor1: '#1a1a2e', gradColor2: '#16213e', gradColor3: '#0f3460', gradAngle: 135,
+            bgImageUrl: '', imgFit: 'cover', bgVideoUrl: ''
+        };
+
+        async function loadFonts() {
+            try {
+                const res = await fetch('/api/bible/fonts');
+                const data = await res.json();
+                if (!data) return;
+                let css = '';
+                const allFonts = [...(data.builtin || []), ...(data.custom || [])];
+                allFonts.forEach(font => {
+                    if (font.url && font.family) {
+                        css += `
+@font-face {
+    font-family: "${font.family}";
+    src: url("${font.url}") format("${font.format}");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+`;
+                        try {
+                            if (window.FontFace) {
+                                const ff = new FontFace(font.family, `url(${font.url}) format('${font.format}')`);
+                                document.fonts.add(ff);
+                                ff.load().catch(() => {});
+                            }
+                        } catch (err) {}
+                    }
+                });
+                const styleEl = document.getElementById('dynamic_custom_fonts');
+                if (styleEl) styleEl.textContent = css;
+
+                if (document.fonts && document.fonts.ready) {
+                    document.fonts.ready.then(() => autoScaleQuote());
+                }
+            } catch (e) {
+                console.warn('Error loading fonts in portrait:', e);
+            }
+        }
+        loadFonts();
+        socket.on('font_updated', () => loadFonts());
+
+        function applyGraphicProps(p) {
+            if (!p) return;
+            Object.assign(graphicProps, p);
+
+            const g = graphicProps;
+            const qouteEl = document.getElementById('qoute');
+            const refEl = document.getElementById('qoute_reference');
+            const miniBgEl = document.getElementById('mini_background');
+            const holderEl = document.getElementById('qoute_holder');
+            const bgImgEl = document.getElementById('mini_bg_image');
+            const bgVidEl = document.getElementById('mini_bg_video');
+            const bgVidSrc = document.getElementById('mini_bg_video_src');
+
+            if (qouteEl) {
+                if (g.quoteColor) qouteEl.style.color = g.quoteColor;
+                if (g.quoteFontFamily) qouteEl.style.fontFamily = g.quoteFontFamily;
+                if (g.quoteFontWeight) qouteEl.style.fontWeight = g.quoteFontWeight;
+            }
+            if (refEl) {
+                if (g.refColor) refEl.style.color = g.refColor;
+                if (g.refFontFamily) refEl.style.fontFamily = g.refFontFamily;
+                if (g.refFontWeight) refEl.style.fontWeight = g.refFontWeight;
+                refEl.style.fontSize = `${g.refFontSize ?? 1.8}rem`;
+            }
+
+            const mainImgEl = document.getElementById('background');
+            const mainVidEl = document.getElementById('video');
+            const mainVidSrc = document.getElementById('main_video_src');
+            const bodyEl = document.body;
+
+            bodyEl.style.background = '';
+            bodyEl.style.backgroundColor = '';
+            if (mainImgEl) mainImgEl.style.display = 'none';
+            if (mainVidEl) mainVidEl.style.display = 'none';
+
+            const mainOp = (g.mainBgOpacity ?? 100) / 100;
+
+            if (g.mainBgType === 'color') {
+                bodyEl.style.backgroundColor = g.mainBgColor || '#000000';
+            } else if (g.mainBgType === 'gradient') {
+                const c1 = g.mainGradC1 || '#0d0d0d', c2 = g.mainGradC2 || '#1a1a2e', c3 = g.mainGradC3 || '#16213e';
+                bodyEl.style.background = `linear-gradient(${g.mainGradAngle ?? 160}deg, ${c1}, ${c2}, ${c3})`;
+            } else if (g.mainBgType === 'image' && g.mainImgUrl && mainImgEl) {
+                mainImgEl.src = g.mainImgUrl;
+                mainImgEl.style.objectFit = g.mainImgFit || 'cover';
+                mainImgEl.style.opacity = mainOp;
+                mainImgEl.style.display = 'block';
+                bodyEl.style.backgroundColor = '#000';
+            } else if (g.mainBgType === 'video' && g.mainVidUrl && mainVidSrc && mainVidEl) {
+                if (mainVidSrc.src !== location.origin + g.mainVidUrl) {
+                    mainVidSrc.src = g.mainVidUrl;
+                    mainVidEl.load();
+                }
+                mainVidEl.style.opacity = mainOp;
+                mainVidEl.style.display = 'block';
+                bodyEl.style.backgroundColor = '#000';
+            } else {
+                bodyEl.style.backgroundColor = '#000';
+            }
+
+            if (miniBgEl) {
+                const show = g.miniBgShow !== false;
+                miniBgEl.style.display = show ? 'block' : 'none';
+
+                miniBgEl.style.background = '';
+                miniBgEl.style.backgroundColor = '';
+                miniBgEl.style.opacity = '1';
+                if (bgImgEl) bgImgEl.style.display = 'none';
+                if (bgVidEl) bgVidEl.style.display = 'none';
+
+                const opacity = (g.miniBgOpacity ?? 85) / 100;
+
+                if (g.miniBgType === 'gradient') {
+                    const c1 = g.gradColor1 || '#1a1a2e', c2 = g.gradColor2 || '#16213e', c3 = g.gradColor3 || '#0f3460';
+                    miniBgEl.style.background = `linear-gradient(${g.gradAngle ?? 135}deg, ${c1}, ${c2}, ${c3})`;
+                    miniBgEl.style.opacity = opacity;
+                } else if (g.miniBgType === 'image' && g.bgImageUrl) {
+                    if (bgImgEl) {
+                        bgImgEl.src = g.bgImageUrl;
+                        bgImgEl.style.objectFit = g.imgFit || 'cover';
+                        bgImgEl.style.display = 'block';
+                        bgImgEl.style.opacity = opacity;
+                    }
+                    miniBgEl.style.background = 'transparent';
+                } else if (g.miniBgType === 'video' && g.bgVideoUrl) {
+                    if (bgVidSrc && bgVidEl) {
+                        bgVidSrc.src = g.bgVideoUrl;
+                        bgVidEl.load();
+                        bgVidEl.style.display = 'block';
+                        bgVidEl.style.opacity = opacity;
+                    }
+                    miniBgEl.style.background = 'transparent';
+                } else {
+                    miniBgEl.style.backgroundColor = g.miniBgColor || '#a52a2a';
+                    miniBgEl.style.opacity = opacity;
+                }
+
+                const blurPx = g.miniBgBlur ?? 0;
+                miniBgEl.style.backdropFilter = blurPx > 0 ? `blur(${blurPx}px)` : '';
+                miniBgEl.style.webkitBackdropFilter = blurPx > 0 ? `blur(${blurPx}px)` : '';
+                if (bgImgEl) bgImgEl.style.filter = blurPx > 0 ? `blur(${blurPx}px)` : '';
+                if (bgVidEl) bgVidEl.style.filter = blurPx > 0 ? `blur(${blurPx}px)` : '';
+
+                const rad = (g.miniBgRadius ?? 32) + 'px';
+                miniBgEl.style.borderRadius = rad;
+                if (holderEl) holderEl.style.borderRadius = rad;
+            }
+
+            autoScaleQuote();
+        }
+
+        function autoScaleQuote() {
+            const qoute = document.getElementById('qoute');
+            const holder = document.getElementById('qoute_holder');
+            if (!qoute || !holder) return;
+
+            const ref = document.getElementById('qoute_reference');
+            const refHeight = ref ? ref.offsetHeight : 40;
+            const style = window.getComputedStyle(holder);
+            const paddingTop = parseFloat(style.paddingTop) || 40;
+            const paddingBottom = parseFloat(style.paddingBottom) || 40;
+            const holderMaxHeight = document.body.clientHeight * 0.68;
+            const maxAllowedHeight = holderMaxHeight - refHeight - paddingTop - paddingBottom - 30;
+
+            let fontSize = graphicProps.maxFontSize || 4.0;
+            const minFontSize = graphicProps.minFontSize || 1.2;
+
+            qoute.style.fontSize = fontSize + 'rem';
+
+            while ((qoute.scrollHeight > maxAllowedHeight || qoute.offsetHeight > maxAllowedHeight) && fontSize > minFontSize) {
+                fontSize -= 0.05;
+                qoute.style.fontSize = fontSize + 'rem';
+            }
+
+            if (fontSize < minFontSize) {
+                qoute.style.fontSize = minFontSize + 'rem';
+            }
+        }
+
+        const qouteEl = document.getElementById('qoute');
+        if (qouteEl) {
+            const observer = new MutationObserver(autoScaleQuote);
+            observer.observe(qouteEl, { childList: true, characterData: true, subtree: true });
+        }
+
+        window.addEventListener('resize', autoScaleQuote);
+        window.addEventListener('load', autoScaleQuote);
+        document.addEventListener('DOMContentLoaded', autoScaleQuote);
+        setTimeout(autoScaleQuote, 50);
+
+        const OT_BOOKS = ['ዘፍጥረት','ዘጸአት','ዘሌዋውያን','ዘኁልቁ','ዘዳግም','ኢያሱ','መሳፍንት','ሩት','1ኛ ሳሙኤል','2ኛ ሳሙኤል','1ኛ ነገሥት','2ኛ ነገሥት','1ኛ ዜና','2ኛ ዜና','እዝራ','ነህምያ','አስቴር','ኢዮብ','መዝሙር','ምሳሌ','መክብብ','መኃልይ','ኢሳይያስ','ኤርምያስ','ሰቆቃወ ኤርምያስ','ሕዝቅኤል','ዳንኤል','ሆሴዕ','ኢዩኤል','አሞጽ','አብድዩ','ዮናስ','ሚክያስ','ናሆም','ዘካርያስ','ሶፎኒያስ','ሐጌ','ዘካርያስ','ሚልክያስ'];
+        const NT_BOOKS = ['ማቴዎስ','ማርቆስ','ሉቃስ','ዮሐንስ','ሐዋርያት','ሮሜ','1ኛ ቆሮንቶስ','2ኛ ቆሮንቶስ','ገላትያ','ኤፌሶን','ፊልጵስዩስ','ቆላስይስ','1ኛ ተሰሎንቄ','2ኛ ተሰሎንቄ','1ኛ ጢሞቴዎስ','2ኛ ጢሞቴዎስ','ቲቶ','ፊልሞና','ዕብራውያን','ያዕቆብ','1ኛ ጴጥሮስ','2ኛ ጴጥሮስ','1ኛ ዮሐንስ','2ኛ ዮሐንስ','3ኛ ዮሐንስ','ይሁዳ','ራዕይ'];
+        const OT_EN = ['Genesis','Exodus','Leviticus','Numbers','Deuteronomy','Joshua','Judges','Ruth','1 Samuel','2 Samuel','1 Kings','2 Kings','1 Chronicles','2 Chronicles','Ezra','Nehemiah','Esther','Job','Psalms','Proverbs','Ecclesiastes','Song of Solomon','Isaiah','Jeremiah','Lamentations','Ezekiel','Daniel','Hosea','Joel','Amos','Obadiah','Jonah','Micah','Nahum','Habakkuk','Zephaniah','Haggai','Zechariah','Malachi'];
+        const NT_EN = ['Matthew','Mark','Luke','John','Acts','Romans','1 Corinthians','2 Corinthians','Galatians','Ephesians','Philippians','Colossians','1 Thessalonians','2 Thessalonians','1 Timothy','2 Timothy','Titus','Philemon','Hebrews','James','1 Peter','2 Peter','1 John','2 John','3 John','Jude','Revelation'];
+
+        socket.on('receiveConfig', (res) => {
+            if (!res) return;
+            if (res.type === 'bible_properties' && res.properties) {
+                applyGraphicProps(res.properties);
+            }
+        });
+
+        socket.on('receiveData', (res) => {
+            if (!res) return;
+
+            if (!res.data) return;
+            const bibleState = res.data;
+            const containerEl = document.getElementById('container');
+            if (containerEl) {
+                containerEl.style.display = bibleState.isVisible ? 'flex' : 'none';
+            }
+
+            const selectedVerse = bibleState.selectedVerse;
+            if (!selectedVerse || !selectedVerse.text) return;
+
+            const verseText = selectedVerse.text;
+            const allBooks = bibleState.lang === 'am' ? OT_BOOKS.concat(NT_BOOKS) : OT_EN.concat(NT_EN);
+            const bookName = allBooks[bibleState.selectedBook] || selectedVerse.book || '';
+            const chapterNum = bibleState.selectedChapter || selectedVerse.chapter || 1;
+            const verseNum = selectedVerse.verse ?? selectedVerse.verse_number ?? 1;
+            const referenceText = `${bookName} ${chapterNum}:${verseNum}`;
+
+            const qouteEl = document.getElementById('qoute');
+            const refEl = document.getElementById('qoute_reference');
+            const holderEl = document.getElementById('qoute_holder');
+
+            if (qouteEl) qouteEl.innerText = `"${verseText}"`;
+            if (refEl) refEl.innerText = referenceText;
+            if (holderEl) {
+                holderEl.style.display = bibleState.isVisible ? 'flex' : 'none';
+            }
+
+            autoScaleQuote();
+        });
+    </script>
+</html>

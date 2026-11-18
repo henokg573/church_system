@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Song Mix</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/song-mix.css">
+    <link rel="stylesheet" href="/css/presentation-nav.css">
+</head>
+<body class="song_mix_page">
+    <nav class="plugin_nav" aria-label="Plugin navigation">
+        <a href="/" aria-label="Main page"><i class="bi bi-house-door"></i> Home</a>
+        <a href="/plugin/presenter/dashboard.html" aria-label="Preacher Dashboard for PPT and PDF"><i class="bi bi-easel2"></i> Preacher Dashboard</a>
+        <a href="/plugin/presenter/" aria-label="Presenter Control"><i class="bi bi-sliders"></i> Presenter Control</a>
+        <a href="/plugin/bible/" aria-label="Bible plugin"><i class="bi bi-book"></i> Bible</a>
+        <a href="/plugin/lyrics/" aria-label="Lyrics plugin"><i class="bi bi-music-note-beamed"></i> Lyrics</a>
+        <a href="/plugin/timer/" aria-label="Timer plugin"><i class="bi bi-stopwatch"></i> Timer</a>
+        <a href="/plugin/live_graphics/" aria-label="Live Graphics plugin"><i class="bi bi-broadcast"></i> Live Graphics</a>
+        <button type="button" class="presentation_extend" data-presentation-open aria-label="Extend Screen 01 presentation to another monitor"><i class="bi bi-arrows-fullscreen" aria-hidden="true"></i> Extend</button>
+    </nav>
+    <main class="song_mix_shell">
+        <header class="song_mix_header">
+            <a class="back_to_lyrics" href="index.html"><i class="bi bi-arrow-left"></i> Lyrics</a>
+            <h1>Create Song Mix</h1>
+            <button id="btn_save_mix" class="setting_btn" type="submit" form="song_mix_form"><i class="bi bi-database-add"></i> Save Mix</button>
+        </header>
+
+        <form id="song_mix_form" class="song_mix_form">
+            <section class="mix_metadata">
+                <label>New song title<input id="mix_title" class="property_input" maxlength="200" required></label>
+                <label>Subtitle / Origin<input id="mix_subtitle" class="property_input" maxlength="200"></label>
+                <label>Save to playlist<select id="mix_playlist" class="property_input" required></select></label>
+            </section>
+
+            <section class="mix_builder">
+                <div class="mix_source panel">
+                    <h2>Choose verses</h2>
+                    <label class="mix_field">Source playlist<select id="source_playlist" class="property_input"></select></label>
+                    <div class="mix_field">
+                        <label for="source_song_search">Search songs and lyrics</label>
+                        <input id="source_song_search" class="property_input" type="search" placeholder="Search title or lyrics">
+                    </div>
+                    <div class="mix_field">
+                        <span>Songs</span>
+                        <div id="source_songs" class="source_songs" aria-label="Songs in selected playlist"></div>
+                    </div>
+                    <div id="source_verses" class="source_verses" aria-live="polite">
+                        <p class="mix_empty">Choose a song to view its verses.</p>
+                    </div>
+                    <button id="btn_add_verses" class="mini_btn" type="button" disabled><i class="bi bi-plus-lg"></i> Add selected verses</button>
+                </div>
+
+                <div class="mix_selected panel">
+                    <div class="mix_selected_header">
+                        <div>
+                            <h2>New mix order</h2>
+                            <p>Select verses from one or more songs, then arrange them here.</p>
+                        </div>
+                        <span id="mix_count" class="page_counter">0 verses</span>
+                    </div>
+                    <ol id="mix_verse_list" class="mix_verse_list"></ol>
+                    <p id="mix_empty" class="mix_empty">No verses added yet.</p>
+                </div>
+            </section>
+            <p id="mix_status" class="mix_status" role="status" aria-live="polite"></p>
+        </form>
+    </main>
+    <script src="js/song-mix.js"></script>
+    <script src="/js/presentation-nav.js"></script>
+</body>
+</html>

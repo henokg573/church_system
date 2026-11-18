@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wallpaper Studio</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+</head>
+<body>
+    <header class="topbar">
+        <a class="back-link" href="/" aria-label="Back to home"><i class="bi bi-arrow-left"></i></a>
+        <h1>Wallpaper Studio</h1>
+        <span class="connection-state" id="connection_state">Connecting…</span>
+    </header>
+
+    <main class="studio">
+        <section class="editor panel">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">Create and publish</p>
+                    <h2>Make a screen background</h2>
+                </div>
+            </div>
+
+            <div class="preview" id="preview">
+                <img id="preview_image" alt="Wallpaper preview" hidden>
+                <video id="preview_video" muted loop playsinline hidden></video>
+                <div class="preview_text" id="preview_text" hidden>
+                    <img class="preview_text_background" id="preview_text_image" alt="" hidden>
+                    <video class="preview_text_background" id="preview_text_video" muted loop playsinline hidden></video>
+                    <div class="preview_text_content" id="preview_text_content">
+                        <span id="preview_words"></span>
+                        <small id="preview_subtitle"></small>
+                    </div>
+                </div>
+                <div class="empty_preview" id="empty_preview">
+                    <i class="bi bi-image"></i>
+                    <span>Select or create a wallpaper</span>
+                </div>
+            </div>
+
+            <div class="editor-tabs" role="tablist" aria-label="Wallpaper type">
+                <button type="button" class="tab active" id="tab_text" role="tab" aria-selected="true">Create with words</button>
+                <button type="button" class="tab" id="tab_media" role="tab" aria-selected="false">Image or video</button>
+            </div>
+
+            <section id="text_editor" class="tab-content">
+                <label for="wallpaper_words">Main words</label>
+                <textarea id="wallpaper_words" maxlength="500" placeholder="Write a verse, theme, or welcome message"></textarea>
+                <label for="wallpaper_subtitle">Subtitle <span>optional</span></label>
+                <input id="wallpaper_subtitle" type="text" maxlength="200" placeholder="Add a service name or reference">
+                <div class="design-grid">
+                    <label for="wallpaper_font">Font type</label>
+                    <select id="wallpaper_font">
+                        <option value="Georgia">Georgia</option>
+                        <option value="Arial">Arial</option>
+                        <option value="Verdana">Verdana</option>
+                        <option value="Trebuchet MS">Trebuchet MS</option>
+                        <option value="Times New Roman">Times New Roman</option>
+                        <option value="Segoe UI">Segoe UI</option>
+                        <option value="serif">System serif</option>
+                        <option value="sans-serif">System sans-serif</option>
+                    </select>
+                    <label for="wallpaper_font_size">Text size <span id="wallpaper_font_size_value">72 px</span></label>
+                    <input id="wallpaper_font_size" type="range" min="16" max="240" value="72">
+                    <label for="wallpaper_position">Text position</label>
+                    <select id="wallpaper_position">
+                        <option value="center">Center</option>
+                        <option value="top-left">Top left</option>
+                        <option value="top-center">Top center</option>
+                        <option value="top-right">Top right</option>
+                        <option value="center-left">Center left</option>
+                        <option value="center-right">Center right</option>
+                        <option value="bottom-left">Bottom left</option>
+                        <option value="bottom-center">Bottom center</option>
+                        <option value="bottom-right">Bottom right</option>
+                    </select>
+                    <label for="text_background_type">Background behind text</label>
+                    <select id="text_background_type">
+                        <option value="gradient">Gradient</option>
+                        <option value="image">Image</option>
+                        <option value="video">Video</option>
+                    </select>
+                    <div class="color-row" id="gradient_colors">
+                        <label>Gradient color 1 <input id="background_color" type="color" value="#102a43"></label>
+                        <label>Gradient color 2 <input id="background_color_2" type="color" value="#071521"></label>
+                    </div>
+                    <label for="text_background_media" id="text_background_media_label" hidden>Background media</label>
+                    <select id="text_background_media" hidden></select>
+                    <p class="hint">Upload images or videos in the Image or video tab first, then choose one here as the text background.</p>
+                    <label>Text color <input id="text_color" type="color" value="#ffffff"></label>
+                </div>
+                <button type="button" class="primary-button" id="apply_text">
+                    <i class="bi bi-send"></i> Set text wallpaper
+                </button>
+            </section>
+
+            <section id="media_editor" class="tab-content" hidden>
+                <label class="upload-button" for="wallpaper_file"><i class="bi bi-cloud-arrow-up"></i> Upload image or video</label>
+                <input id="wallpaper_file" type="file" accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,video/quicktime" hidden>
+                <p class="hint">Images and looping video, up to 100 MB. Select a library item to preview, then set it as the screen background.</p>
+                <div class="library-heading">
+                    <h3>Your media</h3>
+                    <button type="button" class="icon-button" id="refresh_media" aria-label="Refresh media library"><i class="bi bi-arrow-clockwise"></i></button>
+                </div>
+                <div class="media-library" id="media_library"></div>
+                <button type="button" class="primary-button" id="apply_media"><i class="bi bi-send"></i> Set selected media</button>
+            </section>
+
+            <div class="status-message" id="studio_status" role="status" aria-live="polite"></div>
+        </section>
+
+        <aside class="help panel">
+            <p class="eyebrow">On screen</p>
+            <h2>Live output</h2>
+            <p>Set a wallpaper to show it behind lyrics, Bible verses, and the timer on the main screen.</p>
+            <a class="screen-link" href="/screen/01/" target="_blank" rel="noopener">
+                <i class="bi bi-display"></i> Open screen output
+            </a>
+            <div class="tip">
+                <i class="bi bi-info-circle"></i>
+                <span>Video wallpapers play muted and loop so they remain suitable as a background.</span>
+            </div>
+        </aside>
+    </main>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

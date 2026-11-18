@@ -1,0 +1,1491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bible Graphic Properties</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=Lobster&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f172a;
+            --bg-deep: #111827;
+            --panel: rgba(17, 24, 39, 0.8);
+            --panel-soft: rgba(15, 23, 42, 0.72);
+            --card: rgba(30, 41, 59, 0.72);
+            --line: rgba(148, 163, 184, 0.2);
+            --text: #edf4ff;
+            --muted: #cbd5e1;
+            --accent: #f5c75f;
+            --accent-2: #38bdf8;
+            --accent-3: #14b8a6;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, var(--bg) 0%, var(--bg-deep) 48%, #172554 100%);
+            color: var(--text);
+            padding: 0.75rem;
+            overflow-y: auto;
+            user-select: none;
+        }
+        .prop-group {
+            margin-bottom: 0.85rem;
+            background: linear-gradient(180deg, rgba(15,23,42,0.96), rgba(17,24,39,0.82));
+            padding: 0.8rem 0.75rem;
+            border-radius: 14px;
+            border: 1px solid var(--line);
+            box-shadow: 0 12px 24px rgba(15, 23, 42, 0.18);
+        }
+        .prop-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: var(--accent);
+            margin-bottom: 0.55rem;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+        .prop-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            gap: 0.45rem;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(148,163,184,0.12);
+            border-radius: 10px;
+            padding: 0.4rem 0.5rem;
+        }
+        .prop-row:last-child { margin-bottom: 0; }
+        label { font-size: 0.78rem; color: var(--muted); flex-shrink: 0; }
+        input[type="color"] {
+            -webkit-appearance: none;
+            border: none;
+            width: 30px; height: 26px;
+            border-radius: 6px;
+            cursor: pointer;
+            background: transparent;
+            flex-shrink: 0;
+            border: 1px solid rgba(148,163,184,0.18);
+        }
+        input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+        input[type="color"]::-webkit-color-swatch { border: 1px solid rgba(148,163,184,0.18); border-radius: 5px; }
+        input[type="range"] { flex: 1; accent-color: var(--accent); cursor: pointer; }
+        input[type="url"], input[type="text"] {
+            flex: 1;
+            background: rgba(15,23,42,0.7);
+            border: 1px solid rgba(148,163,184,0.18);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 0.74rem;
+            padding: 0.28rem 0.45rem;
+            outline: none;
+            min-width: 0;
+        }
+        input[type="url"]:focus, input[type="text"]:focus { border-color: rgba(245,199,95,0.7); box-shadow: 0 0 0 3px rgba(245,199,95,0.12); }
+        .val-badge {
+            font-size: 0.73rem;
+            background: rgba(15,23,42,0.8);
+            padding: 0.12rem 0.38rem;
+            border-radius: 999px;
+            min-width: 42px;
+            text-align: center;
+            color: var(--accent-2);
+            border: 1px solid rgba(125,211,252,0.25);
+            flex-shrink: 0;
+        }
+        input[type="checkbox"] {
+            width: 15px; height: 15px;
+            accent-color: var(--accent-3);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        select {
+            flex: 1;
+            background: rgba(15,23,42,0.7);
+            border: 1px solid rgba(148,163,184,0.18);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 0.76rem;
+            padding: 0.28rem 0.4rem;
+            outline: none;
+            cursor: pointer;
+        }
+        select:focus { border-color: rgba(245,199,95,0.7); box-shadow: 0 0 0 3px rgba(245,199,95,0.12); }
+        .section-hidden { display: none; }
+        .gradient-stops { display: flex; gap: 0.35rem; align-items: center; flex: 1; }
+        .gradient-stops input[type="color"] { flex: 1; }
+
+        /* Buttons */
+        .btn-sm {
+            font-size: 0.72rem;
+            background: linear-gradient(135deg, rgba(14,116,144,0.85), rgba(59,130,246,0.72));
+            color: #fff;
+            border: 1px solid rgba(125,211,252,0.25);
+            border-radius: 8px;
+            padding: 0.28rem 0.58rem;
+            cursor: pointer;
+            white-space: nowrap;
+            flex-shrink: 0;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            transition: transform 0.15s ease;
+        }
+        .btn-sm:hover { background: linear-gradient(135deg, rgba(245,199,95,0.9), rgba(250,204,21,0.7)); color: #111; border-color: rgba(245,199,95,0.8); transform: translateY(-1px); }
+        .btn-sm.danger { background: linear-gradient(135deg, rgba(127,29,29,0.9), rgba(190,24,93,0.7)); }
+        .btn-sm.danger:hover { background: linear-gradient(135deg, rgba(239,68,68,0.9), rgba(244,63,94,0.8)); color: #fff; }
+
+        /* File picker modal */
+        #file_picker_overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.72);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        #file_picker_overlay.open { display: flex; }
+        #file_picker_modal {
+            background: #1a1a1a;
+            border: 1px solid #3a3a3a;
+            border-radius: 10px;
+            width: 92%;
+            max-width: 560px;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        #file_picker_header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.6rem 0.8rem;
+            border-bottom: 1px solid #333;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #159d8d;
+        }
+        #file_picker_header .close-btn {
+            background: none;
+            border: none;
+            color: #aaa;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        #file_picker_header .close-btn:hover { color: #fff; }
+        #file_picker_toolbar {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.8rem;
+            border-bottom: 1px solid #2a2a2a;
+            flex-wrap: wrap;
+        }
+        #file_picker_toolbar input[type="file"] { display: none; }
+        #fp_filter {
+            flex: 1;
+            min-width: 80px;
+        }
+        #file_picker_grid {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0.6rem 0.8rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 0.5rem;
+            align-content: start;
+        }
+        .fp-item {
+            background: #252525;
+            border: 2px solid #3a3a3a;
+            border-radius: 6px;
+            overflow: hidden;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            transition: border-color 0.15s;
+        }
+        .fp-item:hover { border-color: #159d8d; }
+        .fp-item.selected { border-color: #00e5ff; }
+        .fp-item .thumb {
+            width: 100%;
+            aspect-ratio: 16/9;
+            object-fit: cover;
+            background: #111;
+        }
+        .fp-item .vid-icon {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #111;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: #159d8d;
+        }
+        .fp-item .fp-name {
+            font-size: 0.62rem;
+            color: #aaa;
+            padding: 0.2rem 0.3rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .fp-item .fp-actions {
+            display: flex;
+            justify-content: flex-end;
+            padding: 0.15rem 0.25rem;
+        }
+        #fp_empty {
+            grid-column: 1/-1;
+            text-align: center;
+            color: #555;
+            font-size: 0.8rem;
+            padding: 2rem;
+        }
+        #file_picker_footer {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 0.5rem;
+            padding: 0.5rem 0.8rem;
+            border-top: 1px solid #333;
+        }
+        .uploading-badge {
+            font-size: 0.72rem;
+            color: #159d8d;
+            display: none;
+        }
+        .uploading-badge.show { display: inline; }
+
+        /* Built-in font faces */
+        @font-face {
+            font-family: "Amhara";
+            src: url("/fonts/Amhara_reduced.otf") format("opentype");
+            font-weight: 400;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: "Agbalumo";
+            src: url("/fonts/Agbalumo_Regular.ttf") format("truetype");
+            font-weight: 400;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: "BelaBreka";
+            src: url("/fonts/Bela_Bereka.ttf") format("truetype");
+            font-weight: 400;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: "Benaiah";
+            src: url("/fonts/Benaiah.ttf") format("truetype");
+            font-weight: 400;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: "Bebas Neue";
+            src: url("/fonts/BebasNeue-Regular.ttf") format("truetype");
+            font-weight: 400;
+            font-style: normal;
+        }
+
+        /* Font preview card */
+        .font-preview-card {
+            background: #141414;
+            border: 1px solid #333;
+            border-radius: 6px;
+            padding: 0.55rem 0.7rem;
+            margin: 0.55rem 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        .font-preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #159d8d;
+            font-weight: 700;
+        }
+        .font-preview-quote {
+            font-size: 0.95rem;
+            line-height: 1.35;
+            color: #fff;
+            word-break: break-word;
+            transition: font-family 0.15s, color 0.15s;
+        }
+
+        /* Font Manager Modal */
+        #font_manager_overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.78);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        #font_manager_overlay.open { display: flex; }
+        #font_manager_modal {
+            background: #1a1a1a;
+            border: 1px solid #3a3a3a;
+            border-radius: 10px;
+            width: 94%;
+            max-width: 650px;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 12px 35px rgba(0,0,0,0.6);
+        }
+        #font_manager_header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.65rem 0.9rem;
+            border-bottom: 1px solid #333;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #159d8d;
+        }
+        #font_manager_header .close-btn {
+            background: none;
+            border: none;
+            color: #aaa;
+            font-size: 1.1rem;
+            cursor: pointer;
+        }
+        #font_manager_header .close-btn:hover { color: #fff; }
+        
+        .font-upload-container {
+            padding: 0.65rem 0.9rem;
+            border-bottom: 1px solid #2a2a2a;
+            background: #202020;
+        }
+        .font-dropzone {
+            border: 2px dashed #444;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            background: #181818;
+        }
+        .font-dropzone:hover, .font-dropzone.dragover {
+            border-color: #159d8d;
+            background: rgba(21, 157, 141, 0.08);
+        }
+
+        .fm-tabs {
+            display: flex;
+            gap: 0.35rem;
+            padding: 0.45rem 0.9rem;
+            border-bottom: 1px solid #2a2a2a;
+            background: #171717;
+            overflow-x: auto;
+        }
+        .fm-tab {
+            background: transparent;
+            border: 1px solid transparent;
+            color: #888;
+            font-size: 0.73rem;
+            padding: 0.22rem 0.6rem;
+            border-radius: 4px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.15s;
+        }
+        .fm-tab:hover { color: #ddd; background: #252525; }
+        .fm-tab.active {
+            color: #fff;
+            background: #0d534b;
+            border-color: #159d8d;
+            font-weight: 600;
+        }
+
+        #font_manager_grid {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0.75rem 0.9rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+        .font-card {
+            background: #232323;
+            border: 1px solid #353535;
+            border-radius: 6px;
+            padding: 0.65rem 0.75rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            transition: border-color 0.15s;
+        }
+        .font-card:hover { border-color: #555; }
+        .font-card.active-quote { border-color: #159d8d; background: #1c2725; }
+        .font-card-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+        }
+        .font-card-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .font-badge {
+            font-size: 0.62rem;
+            padding: 0.1rem 0.35rem;
+            border-radius: 3px;
+            background: #333;
+            color: #aaa;
+            text-transform: uppercase;
+        }
+        .font-badge.custom { background: #0b3d37; color: #159d8d; border: 1px solid #159d8d; }
+        .font-badge.builtin { background: #223447; color: #64b5f6; }
+        .font-badge.active { background: #159d8d; color: #000; font-weight: 700; }
+
+        .font-card-samples {
+            background: #141414;
+            border-radius: 4px;
+            padding: 0.5rem 0.65rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+        .font-sample-amh {
+            font-size: 0.95rem;
+            color: #eee;
+            line-height: 1.35;
+        }
+        .font-sample-en {
+            font-size: 0.78rem;
+            color: #aaa;
+            line-height: 1.3;
+        }
+        .font-card-actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 0.35rem;
+        }
+        #font_manager_footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.5rem 0.9rem;
+            border-top: 1px solid #333;
+            background: #181818;
+        }
+    </style>
+    <style id="dynamic_property_fonts"></style>
+</head>
+<body>
+
+    <!-- ── Font Settings ── -->
+    <div class="prop-group">
+        <div class="prop-title"><i class="bi bi-type"></i> Font Settings</div>
+        
+        <!-- Quote Font Family -->
+        <div class="prop-row">
+            <label for="quote_font_family">Quote Font</label>
+            <div style="display:flex; gap:0.3rem; flex:1; min-width:0;">
+                <select id="quote_font_family" style="flex:1; min-width:0;">
+                    <option value="Amhara">Amhara</option>
+                </select>
+                <button class="btn-sm" id="btn_quick_font_upload" title="Upload Custom Font"><i class="bi bi-upload"></i></button>
+                <button class="btn-sm" id="btn_open_font_manager" title="Font Gallery & Manager"><i class="bi bi-fonts"></i></button>
+                <input type="file" id="quick_font_input" accept=".ttf,.otf,.woff,.woff2" style="display:none">
+            </div>
+        </div>
+        <div id="quick_font_uploading" class="uploading-badge" style="margin-bottom:0.4rem; text-align:right;">Uploading font...</div>
+
+        <!-- Reference Font Family -->
+        <div class="prop-row">
+            <label for="ref_font_family">Ref Font</label>
+            <select id="ref_font_family">
+                <option value="Amhara">Amhara</option>
+            </select>
+        </div>
+
+        <!-- Quote Weight -->
+        <div class="prop-row">
+            <label for="quote_font_weight">Quote Weight</label>
+            <select id="quote_font_weight">
+                <option value="400">Regular (400)</option>
+                <option value="500">Medium (500)</option>
+                <option value="600">Semi-Bold (600)</option>
+                <option value="700">Bold (700)</option>
+                <option value="800">Extra Bold (800)</option>
+            </select>
+        </div>
+
+        <!-- Ref Weight -->
+        <div class="prop-row">
+            <label for="ref_font_weight">Ref Weight</label>
+            <select id="ref_font_weight">
+                <option value="400">Regular (400)</option>
+                <option value="500">Medium (500)</option>
+                <option value="600" selected>Semi-Bold (600)</option>
+                <option value="700">Bold (700)</option>
+            </select>
+        </div>
+        <div class="prop-row">
+            <label for="ref_font_size">Ref Size</label>
+            <input type="range" id="ref_font_size" min="0.8" max="5.0" step="0.1" value="1.8">
+            <span class="val-badge" id="ref_font_size_val">1.8rem</span>
+        </div>
+
+        <!-- Live Font Preview -->
+        <div class="font-preview-card" id="font_preview_card">
+            <div class="font-preview-header">
+                <span><i class="bi bi-eye"></i> Live Font Preview</span>
+                <span id="font_preview_badge" style="color:#00bcd4; font-size:0.65rem;">Amhara</span>
+            </div>
+            <div class="font-preview-quote" id="font_preview_quote">"በመጀመሪያ እግዚአብሔር ሰማይንና ምድርን ፈጠረ።"</div>
+        </div>
+
+        <div class="prop-row">
+            <label for="quote_color">Quote Color</label>
+            <input type="color" id="quote_color" value="#ffffff">
+        </div>
+        <div class="prop-row">
+            <label for="ref_color">Reference Color</label>
+            <input type="color" id="ref_color" value="#ffffff">
+        </div>
+        <div class="prop-row">
+            <label for="min_font_size">Min Font</label>
+            <input type="range" id="min_font_size" min="1.0" max="2.5" step="0.1" value="1.3">
+            <span class="val-badge" id="min_font_size_val">1.3rem</span>
+        </div>
+        <div class="prop-row">
+            <label for="max_font_size">Max Font</label>
+            <input type="range" id="max_font_size" min="2.5" max="6.0" step="0.2" value="4.0">
+            <span class="val-badge" id="max_font_size_val">4.0rem</span>
+        </div>
+    </div>
+
+    <!-- ── Main / Full Background ── -->
+    <div class="prop-group">
+        <div class="prop-title"><i class="bi bi-display"></i> Main Background</div>
+        <div class="prop-row">
+            <label for="main_bg_type">Type</label>
+            <select id="main_bg_type">
+                <option value="none">None</option>
+                <option value="color">Solid Color</option>
+                <option value="gradient">Gradient</option>
+                <option value="image">Image</option>
+                <option value="video">Video</option>
+            </select>
+        </div>
+
+        <!-- Solid Color -->
+        <div id="main_section_color" class="section-hidden">
+            <div class="prop-row">
+                <label for="main_bg_color">Color</label>
+                <input type="color" id="main_bg_color" value="#000000">
+            </div>
+        </div>
+
+        <!-- Gradient -->
+        <div id="main_section_gradient" class="section-hidden">
+            <div class="prop-row">
+                <label>Colors</label>
+                <div class="gradient-stops">
+                    <input type="color" id="main_grad_c1" value="#0d0d0d">
+                    <input type="color" id="main_grad_c2" value="#1a1a2e">
+                    <input type="color" id="main_grad_c3" value="#16213e">
+                </div>
+            </div>
+            <div class="prop-row">
+                <label for="main_grad_angle">Angle</label>
+                <input type="range" id="main_grad_angle" min="0" max="360" value="160">
+                <span class="val-badge" id="main_grad_angle_val">160deg</span>
+            </div>
+        </div>
+
+        <!-- Image -->
+        <div id="main_section_image" class="section-hidden">
+            <div class="prop-row">
+                <label>Source</label>
+                <input type="text" id="main_img_url" placeholder="URL or pick file" readonly>
+                <button class="btn-sm" id="btn_main_img_pick"><i class="bi bi-folder2-open"></i></button>
+            </div>
+            <div class="prop-row">
+                <label for="main_img_fit">Fit</label>
+                <select id="main_img_fit">
+                    <option value="cover">Cover</option>
+                    <option value="contain">Contain</option>
+                    <option value="fill">Fill</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Video -->
+        <div id="main_section_video" class="section-hidden">
+            <div class="prop-row">
+                <label>Source</label>
+                <input type="text" id="main_vid_url" placeholder="URL or pick file" readonly>
+                <button class="btn-sm" id="btn_main_vid_pick"><i class="bi bi-folder2-open"></i></button>
+            </div>
+        </div>
+
+        <div class="prop-row" style="margin-top:0.3rem">
+            <label for="main_bg_opacity">Opacity</label>
+            <input type="range" id="main_bg_opacity" min="0" max="100" value="100">
+            <span class="val-badge" id="main_bg_opacity_val">100%</span>
+        </div>
+        <div class="prop-row">
+            <label for="main_bg_blur">Main Background Blur</label>
+            <input type="range" id="main_bg_blur" min="0" max="40" value="0">
+            <span class="val-badge" id="main_bg_blur_val">0px</span>
+        </div>
+    </div>
+
+    <div class="prop-group">
+        <div class="prop-title"><i class="bi bi-aspect-ratio"></i> Mini Lower Third</div>
+        <div class="prop-row">
+            <label for="mini_quote_font_size">Quote Size</label>
+            <input type="range" id="mini_quote_font_size" min="1" max="6" step="0.1" value="4">
+            <span class="val-badge" id="mini_quote_font_size_val">4rem</span>
+        </div>
+        <div class="prop-row">
+            <label for="mini_min_font_size">Minimum Quote Size</label>
+            <input type="range" id="mini_min_font_size" min="0.5" max="3" step="0.1" value="1">
+            <span class="val-badge" id="mini_min_font_size_val">1rem</span>
+        </div>
+        <div class="prop-row">
+            <label for="mini_ref_font_size">Reference Size</label>
+            <input type="range" id="mini_ref_font_size" min="0.8" max="5" step="0.1" value="1.8">
+            <span class="val-badge" id="mini_ref_font_size_val">1.8rem</span>
+        </div>
+        <div class="prop-row">
+            <label for="mini_intro_animation">Intro Animation</label>
+            <select id="mini_intro_animation">
+                <option value="fade">Fade</option>
+                <option value="slide-up">Slide Up</option>
+                <option value="slide-down">Slide Down</option>
+                <option value="slide-left">Slide Left</option>
+                <option value="slide-right">Slide Right</option>
+                <option value="zoom">Zoom</option>
+                <option value="none">None</option>
+            </select>
+        </div>
+        <div class="prop-row">
+            <label for="mini_outro_animation">Outro Animation</label>
+            <select id="mini_outro_animation">
+                <option value="fade">Fade</option>
+                <option value="slide-up">Slide Up</option>
+                <option value="slide-down">Slide Down</option>
+                <option value="slide-left">Slide Left</option>
+                <option value="slide-right">Slide Right</option>
+                <option value="zoom">Zoom</option>
+                <option value="none">None</option>
+            </select>
+        </div>
+        <div class="prop-row">
+            <label for="mini_animation_duration">Duration</label>
+            <input type="range" id="mini_animation_duration" min="200" max="2000" step="100" value="500">
+            <span class="val-badge" id="mini_animation_duration_val">500ms</span>
+        </div>
+        <div class="prop-row">
+            <label for="mini_width">Width</label>
+            <input type="range" id="mini_width" min="40" max="100" value="78">
+            <span class="val-badge" id="mini_width_val">78%</span>
+        </div>
+        <div class="prop-row">
+            <label for="mini_bottom">Bottom Offset</label>
+            <input type="range" id="mini_bottom" min="0" max="30" value="8">
+            <span class="val-badge" id="mini_bottom_val">8%</span>
+        </div>
+        <div class="prop-row">
+            <label for="mini_padding_x">Horizontal Padding</label>
+            <input type="range" id="mini_padding_x" min="0" max="120" step="2" value="40">
+            <span class="val-badge" id="mini_padding_x_val">40px</span>
+        </div>
+        <div class="prop-row">
+            <label for="mini_padding_y">Vertical Padding</label>
+            <input type="range" id="mini_padding_y" min="0" max="80" step="2" value="26">
+            <span class="val-badge" id="mini_padding_y_val">26px</span>
+        </div>
+    </div>
+
+    <!-- ── Lower Third Background ── -->
+    <div class="prop-group">
+        <div class="prop-title"><i class="bi bi-square-half"></i> Lower Third Background</div>
+        <div class="prop-row">
+            <label for="mini_bg_show">Enable</label>
+            <input type="checkbox" id="mini_bg_show" checked>
+        </div>
+        <div class="prop-row">
+            <label for="mini_bg_type">Type</label>
+            <select id="mini_bg_type">
+                <option value="color">Solid Color</option>
+                <option value="gradient">Gradient</option>
+                <option value="image">Image</option>
+                <option value="video">Video</option>
+            </select>
+        </div>
+
+        <!-- Solid Color -->
+        <div id="section_color">
+            <div class="prop-row">
+                <label for="mini_bg_color">Color</label>
+                <input type="color" id="mini_bg_color" value="#a52a2a">
+            </div>
+            <div class="prop-row">
+                <label for="mini_bg_opacity">Opacity</label>
+                <input type="range" id="mini_bg_opacity" min="0" max="100" value="85">
+                <span class="val-badge" id="mini_bg_opacity_val">85%</span>
+            </div>
+        </div>
+
+        <!-- Gradient -->
+        <div id="section_gradient" class="section-hidden">
+            <div class="prop-row">
+                <label>Colors</label>
+                <div class="gradient-stops">
+                    <input type="color" id="grad_color1" value="#1a1a2e">
+                    <input type="color" id="grad_color2" value="#16213e">
+                    <input type="color" id="grad_color3" value="#0f3460">
+                </div>
+            </div>
+            <div class="prop-row">
+                <label for="grad_angle">Angle</label>
+                <input type="range" id="grad_angle" min="0" max="360" value="135">
+                <span class="val-badge" id="grad_angle_val">135deg</span>
+            </div>
+            <div class="prop-row">
+                <label for="mini_bg_opacity_grad">Opacity</label>
+                <input type="range" id="mini_bg_opacity_grad" min="0" max="100" value="85">
+                <span class="val-badge" id="mini_bg_opacity_grad_val">85%</span>
+            </div>
+        </div>
+
+        <!-- Image -->
+        <div id="section_image" class="section-hidden">
+            <div class="prop-row">
+                <label>Source</label>
+                <input type="text" id="bg_image_url" placeholder="URL or pick file" readonly>
+                <button class="btn-sm" id="btn_mini_img_pick"><i class="bi bi-folder2-open"></i></button>
+            </div>
+            <div class="prop-row">
+                <label for="img_fit">Fit</label>
+                <select id="img_fit">
+                    <option value="cover">Cover</option>
+                    <option value="contain">Contain</option>
+                    <option value="fill">Fill</option>
+                </select>
+            </div>
+            <div class="prop-row">
+                <label for="mini_bg_opacity_img">Opacity</label>
+                <input type="range" id="mini_bg_opacity_img" min="0" max="100" value="85">
+                <span class="val-badge" id="mini_bg_opacity_img_val">85%</span>
+            </div>
+        </div>
+
+        <!-- Video -->
+        <div id="section_video" class="section-hidden">
+            <div class="prop-row">
+                <label>Source</label>
+                <input type="text" id="bg_video_url" placeholder="URL or pick file" readonly>
+                <button class="btn-sm" id="btn_mini_vid_pick"><i class="bi bi-folder2-open"></i></button>
+            </div>
+            <div class="prop-row">
+                <label for="mini_bg_opacity_vid">Opacity</label>
+                <input type="range" id="mini_bg_opacity_vid" min="0" max="100" value="85">
+                <span class="val-badge" id="mini_bg_opacity_vid_val">85%</span>
+            </div>
+        </div>
+
+        <!-- Common -->
+        <div class="prop-row" style="margin-top:0.35rem">
+            <label for="mini_bg_radius">Radius</label>
+            <input type="range" id="mini_bg_radius" min="0" max="50" value="32">
+            <span class="val-badge" id="mini_bg_radius_val">32px</span>
+        </div>
+        <div class="prop-row">
+            <label for="mini_bg_blur">Lower Third Blur</label>
+            <input type="range" id="mini_bg_blur" min="0" max="40" value="0">
+            <span class="val-badge" id="mini_bg_blur_val">0px</span>
+        </div>
+    </div>
+
+    <!-- ═══ FILE PICKER MODAL ═══ -->
+    <div id="file_picker_overlay">
+        <div id="file_picker_modal">
+            <div id="file_picker_header">
+                <span id="fp_title"><i class="bi bi-folder2-open"></i> Media Library</span>
+                <button class="close-btn" id="fp_close"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <div id="file_picker_toolbar">
+                <button class="btn-sm" id="fp_upload_btn"><i class="bi bi-upload"></i> Upload</button>
+                <input type="file" id="fp_file_input" accept="image/*,video/*" multiple>
+                <span class="uploading-badge" id="fp_uploading">Uploading...</span>
+                <select id="fp_filter" style="max-width:110px">
+                    <option value="all">All Files</option>
+                    <option value="image">Images</option>
+                    <option value="video">Videos</option>
+                </select>
+                <button class="btn-sm" id="fp_refresh_btn" title="Refresh"><i class="bi bi-arrow-clockwise"></i></button>
+            </div>
+            <div id="file_picker_grid">
+                <div id="fp_empty">No files uploaded yet.</div>
+            </div>
+            <div id="file_picker_footer">
+                <button class="btn-sm danger" id="fp_delete_btn" style="display:none"><i class="bi bi-trash3"></i> Delete</button>
+                <button class="btn-sm" style="background:#444" id="fp_cancel_btn">Cancel</button>
+                <button class="btn-sm" id="fp_select_btn" disabled><i class="bi bi-check2"></i> Use Selected</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ FONT MANAGER MODAL ═══ -->
+    <div id="font_manager_overlay">
+        <div id="font_manager_modal">
+            <div id="font_manager_header">
+                <span><i class="bi bi-fonts"></i> Font Gallery & Custom Font Upload</span>
+                <button class="close-btn" id="fm_close"><i class="bi bi-x-lg"></i></button>
+            </div>
+            
+            <div class="font-upload-container">
+                <input type="file" id="fm_file_input" accept=".ttf,.otf,.woff,.woff2" style="display:none">
+                <div class="font-dropzone" id="fm_dropzone">
+                    <i class="bi bi-cloud-arrow-up-fill" style="font-size:1.6rem; color:#159d8d;"></i>
+                    <div style="font-size:0.82rem; font-weight:600; color:#eee;">Click or Drag & Drop custom font here</div>
+                    <div style="font-size:0.7rem; color:#888;">Supports TrueType (.ttf), OpenType (.otf), and Web Fonts (.woff, .woff2)</div>
+                </div>
+                <div id="fm_uploading" class="uploading-badge" style="margin-top:0.35rem; display:none; text-align:center;">
+                    <i class="bi bi-arrow-repeat spin"></i> Uploading custom font...
+                </div>
+            </div>
+
+            <div class="fm-tabs">
+                <button class="fm-tab active" data-tab="all" id="fm_tab_all">All Fonts (<span id="fm_count_all">0</span>)</button>
+                <button class="fm-tab" data-tab="custom" id="fm_tab_custom">Custom Uploaded (<span id="fm_count_custom">0</span>)</button>
+                <button class="fm-tab" data-tab="ethiopic" id="fm_tab_ethiopic">Ethiopic / Amharic</button>
+                <button class="fm-tab" data-tab="web" id="fm_tab_web">Web & System</button>
+            </div>
+
+            <div id="font_manager_grid">
+                <!-- Dynamically populated font cards -->
+            </div>
+
+            <div id="font_manager_footer">
+                <span style="font-size:0.72rem; color:#888;">Click "Set as Quote" or "Set as Ref" to apply any font</span>
+                <button class="btn-sm" style="background:#444" id="fm_done_btn">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        // ── State ──────────────────────────────────────────────────
+        const props = {
+            quoteColor: '#ffffff', refColor: '#ffffff',
+            minFontSize: 1.3, maxFontSize: 4.0,
+            quoteFontFamily: 'Amhara',
+            refFontFamily: 'Amhara',
+            quoteFontWeight: '400',
+            refFontWeight: '600',
+            refFontSize: 1.8,
+            // Main BG
+            mainBgType: 'none',
+            mainBgColor: '#000000',
+            mainGradC1: '#0d0d0d', mainGradC2: '#1a1a2e', mainGradC3: '#16213e',
+            mainGradAngle: 160,
+            mainImgUrl: '', mainImgFit: 'cover',
+            mainVidUrl: '',
+            mainBgOpacity: 100, mainBgBlur: 0,
+            miniQuoteFontSize: 4, miniMinFontSize: 1, miniRefFontSize: 1.8,
+            miniIntroAnimation: 'fade', miniOutroAnimation: 'fade', miniAnimationDuration: 500,
+            miniWidth: 78, miniBottom: 8, miniPaddingX: 40, miniPaddingY: 26,
+            // Mini BG
+            miniBgShow: true, miniBgType: 'color',
+            miniBgColor: '#a52a2a', miniBgOpacity: 85, miniBgRadius: 32, miniBgBlur: 0,
+            gradColor1: '#1a1a2e', gradColor2: '#16213e', gradColor3: '#0f3460',
+            gradAngle: 135,
+            bgImageUrl: '', imgFit: 'cover', bgVideoUrl: ''
+        };
+
+        // ── Section helpers ────────────────────────────────────────
+        const mainSections = { color:'main_section_color', gradient:'main_section_gradient', image:'main_section_image', video:'main_section_video' };
+        const miniSections = { color:'section_color', gradient:'section_gradient', image:'section_image', video:'section_video' };
+
+        function showSections(map, active) {
+            Object.values(map).forEach(id => { const el = document.getElementById(id); if (el) el.classList.add('section-hidden'); });
+            if (active && map[active]) { const el = document.getElementById(map[active]); if (el) el.classList.remove('section-hidden'); }
+        }
+
+        document.getElementById('main_bg_type').addEventListener('change', () => {
+            props.mainBgType = document.getElementById('main_bg_type').value;
+            showSections(mainSections, props.mainBgType);
+            emitProps();
+        });
+        document.getElementById('mini_bg_type').addEventListener('change', () => {
+            props.miniBgType = document.getElementById('mini_bg_type').value;
+            showSections(miniSections, props.miniBgType);
+            emitProps();
+        });
+
+        // ── Binders ───────────────────────────────────────────────
+        function bindRange(id, key, valId, unit) {
+            const el = document.getElementById(id);
+            const ve = valId ? document.getElementById(valId) : null;
+            if (!el) return;
+            el.addEventListener('input', () => { props[key] = parseFloat(el.value); if (ve) ve.textContent = el.value + unit; emitProps(); });
+        }
+        function bindColor(id, key) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.addEventListener('input', () => { props[key] = el.value; updateFontPreview(); emitProps(); });
+        }
+        function bindCheck(id, key) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.addEventListener('change', () => { props[key] = el.checked; emitProps(); });
+        }
+        function bindSelect(id, key) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.addEventListener('change', () => { props[key] = el.value; updateFontPreview(); emitProps(); });
+        }
+
+        // Font
+        bindSelect('quote_font_family','quoteFontFamily');
+        bindSelect('ref_font_family','refFontFamily');
+        bindSelect('quote_font_weight','quoteFontWeight');
+        bindSelect('ref_font_weight','refFontWeight');
+        bindColor('quote_color','quoteColor'); bindColor('ref_color','refColor');
+        bindRange('min_font_size','minFontSize','min_font_size_val','rem');
+        bindRange('max_font_size','maxFontSize','max_font_size_val','rem');
+        bindRange('ref_font_size','refFontSize','ref_font_size_val','rem');
+        document.getElementById('ref_font_size').addEventListener('input', updateFontPreview);
+        // Main BG
+        bindColor('main_bg_color','mainBgColor');
+        bindColor('main_grad_c1','mainGradC1'); bindColor('main_grad_c2','mainGradC2'); bindColor('main_grad_c3','mainGradC3');
+        bindRange('main_grad_angle','mainGradAngle','main_grad_angle_val','deg');
+        bindSelect('main_img_fit','mainImgFit');
+        bindRange('main_bg_opacity','mainBgOpacity','main_bg_opacity_val','%');
+        bindRange('main_bg_blur','mainBgBlur','main_bg_blur_val','px');
+        // Mini lower-third layout
+        bindRange('mini_quote_font_size','miniQuoteFontSize','mini_quote_font_size_val','rem');
+        bindRange('mini_min_font_size','miniMinFontSize','mini_min_font_size_val','rem');
+        bindRange('mini_ref_font_size','miniRefFontSize','mini_ref_font_size_val','rem');
+        bindSelect('mini_intro_animation','miniIntroAnimation');
+        bindSelect('mini_outro_animation','miniOutroAnimation');
+        bindRange('mini_animation_duration','miniAnimationDuration','mini_animation_duration_val','ms');
+        bindRange('mini_width','miniWidth','mini_width_val','%');
+        bindRange('mini_bottom','miniBottom','mini_bottom_val','%');
+        bindRange('mini_padding_x','miniPaddingX','mini_padding_x_val','px');
+        bindRange('mini_padding_y','miniPaddingY','mini_padding_y_val','px');
+        // Mini BG
+        bindCheck('mini_bg_show','miniBgShow');
+        bindColor('mini_bg_color','miniBgColor');
+        bindRange('mini_bg_opacity','miniBgOpacity','mini_bg_opacity_val','%');
+        bindColor('grad_color1','gradColor1'); bindColor('grad_color2','gradColor2'); bindColor('grad_color3','gradColor3');
+        bindRange('grad_angle','gradAngle','grad_angle_val','deg');
+        bindRange('mini_bg_opacity_grad','miniBgOpacity','mini_bg_opacity_grad_val','%');
+        bindSelect('img_fit','imgFit');
+        bindRange('mini_bg_opacity_img','miniBgOpacity','mini_bg_opacity_img_val','%');
+        bindRange('mini_bg_opacity_vid','miniBgOpacity','mini_bg_opacity_vid_val','%');
+        bindRange('mini_bg_radius','miniBgRadius','mini_bg_radius_val','px');
+        bindRange('mini_bg_blur','miniBgBlur','mini_bg_blur_val','px');
+
+        // ── Emit ──────────────────────────────────────────────────
+        function emitProps() {
+            socket.emit('sendConfig', { type: 'bible_properties', properties: { ...props } });
+        }
+
+        // ── Font library, upload, preview, and selection ───────────
+        let availableFonts = { builtin: [], custom: [], web: [] };
+        let activeFontTab = 'all';
+
+        function allFonts() {
+            return [...availableFonts.builtin, ...availableFonts.custom, ...availableFonts.web];
+        }
+
+        function fontForFamily(family) {
+            return allFonts().find(font => font.family === family);
+        }
+
+        function updateFontPreview() {
+            const quote = document.getElementById('font_preview_quote');
+            const badge = document.getElementById('font_preview_badge');
+            const quoteFont = fontForFamily(props.quoteFontFamily);
+
+            if (quote) {
+                quote.style.fontFamily = props.quoteFontFamily || 'Amhara';
+                quote.style.fontWeight = props.quoteFontWeight || '400';
+                quote.style.color = props.quoteColor || '#ffffff';
+            }
+            if (badge) badge.textContent = quoteFont ? quoteFont.name : (props.quoteFontFamily || 'Amhara');
+        }
+
+        function renderFontOptions() {
+            ['quote_font_family', 'ref_font_family'].forEach((id) => {
+                const select = document.getElementById(id);
+                const selectedFamily = id === 'quote_font_family' ? props.quoteFontFamily : props.refFontFamily;
+                select.replaceChildren();
+
+                [
+                    ['builtin', 'Built-in Fonts'],
+                    ['custom', 'Uploaded Fonts'],
+                    ['web', 'Web & System Fonts']
+                ].forEach(([key, label]) => {
+                    const fonts = availableFonts[key] || [];
+                    if (!fonts.length) return;
+                    const group = document.createElement('optgroup');
+                    group.label = label;
+                    fonts.forEach(font => {
+                        const option = document.createElement('option');
+                        option.value = font.family;
+                        option.textContent = font.name;
+                        group.appendChild(option);
+                    });
+                    select.appendChild(group);
+                });
+
+                if (selectedFamily && !allFonts().some(font => font.family === selectedFamily)) {
+                    const option = document.createElement('option');
+                    option.value = selectedFamily;
+                    option.textContent = selectedFamily + ' (unavailable)';
+                    select.appendChild(option);
+                }
+                select.value = selectedFamily || 'Amhara';
+            });
+        }
+
+        function registerUploadedFonts() {
+            const style = document.getElementById('dynamic_property_fonts');
+            const faces = [...availableFonts.builtin, ...availableFonts.custom]
+                .filter(font => font.url && font.family)
+                .map(font => `@font-face { font-family: ${JSON.stringify(font.family)}; src: url(${JSON.stringify(font.url)}) format(${JSON.stringify(font.format)}); font-weight: 100 900; font-style: normal; font-display: swap; }`);
+            style.textContent = faces.join('\n');
+        }
+
+        function renderFontGallery() {
+            const grid = document.getElementById('font_manager_grid');
+            const fonts = allFonts().filter(font => {
+                if (activeFontTab === 'custom') return font.isCustom;
+                if (activeFontTab === 'ethiopic') return /ethiopic|amharic/i.test(`${font.category || ''} ${font.name || ''}`);
+                if (activeFontTab === 'web') return availableFonts.web.includes(font);
+                return true;
+            });
+            grid.replaceChildren();
+
+            document.getElementById('fm_count_all').textContent = allFonts().length;
+            document.getElementById('fm_count_custom').textContent = availableFonts.custom.length;
+            if (!fonts.length) {
+                const empty = document.createElement('div');
+                empty.style.cssText = 'color:#888;text-align:center;padding:1.5rem;font-size:.8rem';
+                empty.textContent = activeFontTab === 'custom' ? 'No custom fonts uploaded yet.' : 'No fonts found.';
+                grid.appendChild(empty);
+                return;
+            }
+
+            fonts.forEach(font => {
+                const card = document.createElement('div');
+                card.className = 'font-card';
+                if (font.family === props.quoteFontFamily) card.classList.add('active-quote');
+
+                const top = document.createElement('div');
+                top.className = 'font-card-top';
+                const title = document.createElement('div');
+                title.className = 'font-card-title';
+                title.textContent = font.name;
+                const badge = document.createElement('span');
+                badge.className = `font-badge ${font.isCustom ? 'custom' : font.isBuiltin ? 'builtin' : ''}`;
+                badge.textContent = font.isCustom ? 'Custom' : font.isBuiltin ? 'Built-in' : (font.category || 'Font');
+                title.appendChild(badge);
+                top.appendChild(title);
+                card.appendChild(top);
+
+                const sample = document.createElement('div');
+                sample.className = 'font-card-samples';
+                const amh = document.createElement('div');
+                amh.className = 'font-sample-amh';
+                amh.textContent = 'በመጀመሪያ እግዚአብሔር ሰማይንና ምድርን ፈጠረ።';
+                amh.style.fontFamily = font.family;
+                const en = document.createElement('div');
+                en.className = 'font-sample-en';
+                en.textContent = `${font.name} — The quick brown fox jumps over the lazy dog.`;
+                en.style.fontFamily = font.family;
+                sample.append(amh, en);
+                card.appendChild(sample);
+
+                const actions = document.createElement('div');
+                actions.className = 'font-card-actions';
+                const quoteButton = document.createElement('button');
+                quoteButton.className = 'btn-sm';
+                quoteButton.textContent = 'Set as Quote';
+                quoteButton.addEventListener('click', () => setFont(font, 'quote'));
+                const refButton = document.createElement('button');
+                refButton.className = 'btn-sm';
+                refButton.textContent = 'Set as Ref';
+                refButton.addEventListener('click', () => setFont(font, 'ref'));
+                actions.append(quoteButton, refButton);
+                if (font.isCustom) {
+                    const deleteButton = document.createElement('button');
+                    deleteButton.className = 'btn-sm danger';
+                    deleteButton.title = 'Delete uploaded font';
+                    deleteButton.innerHTML = '<i class="bi bi-trash3"></i>';
+                    deleteButton.addEventListener('click', () => deleteFont(font));
+                    actions.appendChild(deleteButton);
+                }
+                card.appendChild(actions);
+                grid.appendChild(card);
+            });
+        }
+
+        function setFont(font, target) {
+            const key = target === 'ref' ? 'refFontFamily' : 'quoteFontFamily';
+            const selectId = target === 'ref' ? 'ref_font_family' : 'quote_font_family';
+            props[key] = font.family;
+            document.getElementById(selectId).value = font.family;
+            updateFontPreview();
+            renderFontGallery();
+            emitProps();
+        }
+
+        async function loadAvailableFonts() {
+            try {
+                const response = await fetch('/api/bible/fonts', { cache: 'no-store' });
+                if (!response.ok) throw new Error(`Font list request failed (${response.status})`);
+                const data = await response.json();
+                availableFonts = {
+                    builtin: Array.isArray(data.builtin) ? data.builtin : [],
+                    custom: Array.isArray(data.custom) ? data.custom : [],
+                    web: Array.isArray(data.web) ? data.web : []
+                };
+                registerUploadedFonts();
+                renderFontOptions();
+                updateFontPreview();
+                renderFontGallery();
+            } catch (error) {
+                console.error('Unable to load fonts:', error);
+                document.getElementById('font_manager_grid').textContent = 'Unable to load fonts. Check the server and try again.';
+            }
+        }
+
+        async function uploadFont(file, quick = false) {
+            if (!file) return;
+            const badge = document.getElementById(quick ? 'quick_font_uploading' : 'fm_uploading');
+            badge.classList.add('show');
+            const form = new FormData();
+            form.append('font', file);
+            try {
+                const response = await fetch('/api/bible/fonts/upload', { method: 'POST', body: form });
+                const result = await response.json().catch(() => ({}));
+                if (!response.ok || !result.success || !result.font) {
+                    throw new Error(result.error || `Upload failed (${response.status})`);
+                }
+                await loadAvailableFonts();
+                if (quick) setFont(result.font, 'quote');
+                else {
+                    activeFontTab = 'custom';
+                    document.querySelectorAll('.fm-tab').forEach(tab => tab.classList.toggle('active', tab.dataset.tab === 'custom'));
+                    renderFontGallery();
+                }
+            } catch (error) {
+                console.error('Font upload failed:', error);
+                alert(error.message || 'Font upload failed.');
+            } finally {
+                badge.classList.remove('show');
+            }
+        }
+
+        async function deleteFont(font) {
+            if (!confirm(`Delete the uploaded font “${font.name}”?`)) return;
+            try {
+                const response = await fetch(`/api/bible/fonts/${encodeURIComponent(font.filename)}`, { method: 'DELETE' });
+                const result = await response.json().catch(() => ({}));
+                if (!response.ok) throw new Error(result.error || `Delete failed (${response.status})`);
+                if (props.quoteFontFamily === font.family) props.quoteFontFamily = 'Amhara';
+                if (props.refFontFamily === font.family) props.refFontFamily = 'Amhara';
+                await loadAvailableFonts();
+                emitProps();
+            } catch (error) {
+                alert(error.message || 'Could not delete font.');
+            }
+        }
+
+        document.getElementById('btn_quick_font_upload').addEventListener('click', () => document.getElementById('quick_font_input').click());
+        document.getElementById('quick_font_input').addEventListener('change', async event => {
+            await uploadFont(event.target.files[0], true);
+            event.target.value = '';
+        });
+        document.getElementById('btn_open_font_manager').addEventListener('click', () => {
+            document.getElementById('font_manager_overlay').classList.add('open');
+            loadAvailableFonts();
+        });
+        document.getElementById('fm_close').addEventListener('click', () => document.getElementById('font_manager_overlay').classList.remove('open'));
+        document.getElementById('fm_done_btn').addEventListener('click', () => document.getElementById('font_manager_overlay').classList.remove('open'));
+        document.querySelectorAll('.fm-tab').forEach(tab => tab.addEventListener('click', () => {
+            activeFontTab = tab.dataset.tab;
+            document.querySelectorAll('.fm-tab').forEach(item => item.classList.toggle('active', item === tab));
+            renderFontGallery();
+        }));
+        document.getElementById('fm_dropzone').addEventListener('click', () => document.getElementById('fm_file_input').click());
+        document.getElementById('fm_file_input').addEventListener('change', async event => {
+            await uploadFont(event.target.files[0]);
+            event.target.value = '';
+        });
+        const fontDropzone = document.getElementById('fm_dropzone');
+        ['dragenter', 'dragover'].forEach(type => fontDropzone.addEventListener(type, event => {
+            event.preventDefault();
+            fontDropzone.classList.add('dragover');
+        }));
+        ['dragleave', 'drop'].forEach(type => fontDropzone.addEventListener(type, event => {
+            event.preventDefault();
+            fontDropzone.classList.remove('dragover');
+        }));
+        fontDropzone.addEventListener('drop', event => uploadFont(event.dataTransfer.files[0]));
+        socket.on('font_updated', loadAvailableFonts);
+        loadAvailableFonts();
+
+        // ══════════════════════════════════════════════════════════
+        // FILE PICKER
+        // ══════════════════════════════════════════════════════════
+        let fpCallback = null; // function(url, type)
+        let fpSelectedItem = null;
+        let fpFiles = [];
+
+        function openFilePicker(filterType, onSelect) {
+            fpCallback = onSelect;
+            fpSelectedItem = null;
+            document.getElementById('fp_filter').value = filterType === 'video' ? 'video' : filterType === 'image' ? 'image' : 'all';
+            document.getElementById('fp_select_btn').disabled = true;
+            document.getElementById('fp_delete_btn').style.display = 'none';
+            document.getElementById('file_picker_overlay').classList.add('open');
+            loadFiles();
+        }
+
+        function closeFilePicker() {
+            document.getElementById('file_picker_overlay').classList.remove('open');
+            fpCallback = null;
+            fpSelectedItem = null;
+        }
+
+        document.getElementById('fp_close').onclick = closeFilePicker;
+        document.getElementById('fp_cancel_btn').onclick = closeFilePicker;
+
+        document.getElementById('fp_filter').addEventListener('change', renderGrid);
+        document.getElementById('fp_refresh_btn').addEventListener('click', loadFiles);
+
+        function loadFiles() {
+            fetch('/api/bible/uploads')
+                .then(r => r.json())
+                .then(data => { fpFiles = data; renderGrid(); })
+                .catch(() => { fpFiles = []; renderGrid(); });
+        }
+
+        function renderGrid() {
+            const grid = document.getElementById('file_picker_grid');
+            const filter = document.getElementById('fp_filter').value;
+            const shown = filter === 'all' ? fpFiles : fpFiles.filter(f => f.type === filter);
+
+            grid.innerHTML = '';
+            if (!shown.length) {
+                grid.innerHTML = '<div id="fp_empty">No files found.</div>';
+                return;
+            }
+
+            shown.forEach(file => {
+                const item = document.createElement('div');
+                item.className = 'fp-item';
+                item.dataset.url = file.url;
+                item.dataset.type = file.type;
+                item.dataset.name = file.name;
+
+                if (file.type === 'image') {
+                    item.innerHTML = `
+                        <img class="thumb" src="${file.url}" loading="lazy" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22><rect width=%22100%25%22 height=%22100%25%22 fill=%22%23222%22/></svg>'">
+                        <div class="fp-name" title="${file.name}">${file.name}</div>
+                    `;
+                } else {
+                    item.innerHTML = `
+                        <div class="vid-icon"><i class="bi bi-play-circle-fill"></i></div>
+                        <div class="fp-name" title="${file.name}">${file.name}</div>
+                    `;
+                }
+
+                item.addEventListener('click', () => {
+                    document.querySelectorAll('.fp-item').forEach(i => i.classList.remove('selected'));
+                    item.classList.add('selected');
+                    fpSelectedItem = file;
+                    document.getElementById('fp_select_btn').disabled = false;
+                    document.getElementById('fp_delete_btn').style.display = 'inline-flex';
+                });
+
+                grid.appendChild(item);
+            });
+        }
+
+        document.getElementById('fp_select_btn').addEventListener('click', () => {
+            if (!fpSelectedItem || !fpCallback) return;
+            fpCallback(fpSelectedItem.url, fpSelectedItem.type);
+            closeFilePicker();
+        });
+
+        document.getElementById('fp_delete_btn').addEventListener('click', () => {
+            if (!fpSelectedItem) return;
+            if (!confirm(`Delete "${fpSelectedItem.name}"?`)) return;
+            fetch(`/api/bible/uploads/${fpSelectedItem.name}`, { method: 'DELETE' })
+                .then(r => r.json())
+                .then(() => { fpSelectedItem = null; loadFiles(); document.getElementById('fp_select_btn').disabled = true; document.getElementById('fp_delete_btn').style.display = 'none'; })
+                .catch(() => alert('Delete failed'));
+        });
+
+        // Upload
+        document.getElementById('fp_upload_btn').addEventListener('click', () => {
+            document.getElementById('fp_file_input').click();
+        });
+        document.getElementById('fp_file_input').addEventListener('change', async (e) => {
+            const files = Array.from(e.target.files);
+            if (!files.length) return;
+            const badge = document.getElementById('fp_uploading');
+            badge.classList.add('show');
+            for (const file of files) {
+                const fd = new FormData();
+                fd.append('file', file);
+                try {
+                    await fetch('/api/bible/upload', { method: 'POST', body: fd });
+                } catch(err) { console.warn('Upload failed', err); }
+            }
+            badge.classList.remove('show');
+            e.target.value = '';
+            loadFiles();
+        });
+
+        // ── Picker trigger buttons ────────────────────────────────
+        document.getElementById('btn_main_img_pick').addEventListener('click', () => {
+            openFilePicker('image', (url) => {
+                props.mainImgUrl = url;
+                document.getElementById('main_img_url').value = url.split('/').pop();
+                emitProps();
+            });
+        });
+        document.getElementById('btn_main_vid_pick').addEventListener('click', () => {
+            openFilePicker('video', (url) => {
+                props.mainVidUrl = url;
+                document.getElementById('main_vid_url').value = url.split('/').pop();
+                emitProps();
+            });
+        });
+        document.getElementById('btn_mini_img_pick').addEventListener('click', () => {
+            openFilePicker('image', (url) => {
+                props.bgImageUrl = url;
+                document.getElementById('bg_image_url').value = url.split('/').pop();
+                emitProps();
+            });
+        });
+        document.getElementById('btn_mini_vid_pick').addEventListener('click', () => {
+            openFilePicker('video', (url) => {
+                props.bgVideoUrl = url;
+                document.getElementById('bg_video_url').value = url.split('/').pop();
+                emitProps();
+            });
+        });
+
+        // ── Sync UI from config ───────────────────────────────────
+        function syncUI(p) {
+            if (!p) return;
+            Object.assign(props, p);
+
+            document.getElementById('quote_color').value = props.quoteColor || '#ffffff';
+            document.getElementById('ref_color').value = props.refColor || '#ffffff';
+            document.getElementById('quote_font_family').value = props.quoteFontFamily || 'Amhara';
+            document.getElementById('ref_font_family').value = props.refFontFamily || 'Amhara';
+            document.getElementById('quote_font_weight').value = props.quoteFontWeight || '400';
+            document.getElementById('ref_font_weight').value = props.refFontWeight || '600';
+            setRange('ref_font_size','ref_font_size_val', props.refFontSize ?? 1.8, 'rem');
+            updateFontPreview();
+            renderFontGallery();
+            setRange('min_font_size','min_font_size_val', props.minFontSize||1.3, 'rem');
+            setRange('max_font_size','max_font_size_val', props.maxFontSize||4.0, 'rem');
+
+            // Main BG
+            document.getElementById('main_bg_type').value = props.mainBgType || 'none';
+            showSections(mainSections, props.mainBgType);
+            document.getElementById('main_bg_color').value = props.mainBgColor || '#000000';
+            document.getElementById('main_grad_c1').value = props.mainGradC1 || '#0d0d0d';
+            document.getElementById('main_grad_c2').value = props.mainGradC2 || '#1a1a2e';
+            document.getElementById('main_grad_c3').value = props.mainGradC3 || '#16213e';
+            setRange('main_grad_angle','main_grad_angle_val', props.mainGradAngle??160, 'deg');
+            document.getElementById('main_img_url').value = props.mainImgUrl ? props.mainImgUrl.split('/').pop() : '';
+            document.getElementById('main_img_fit').value = props.mainImgFit || 'cover';
+            document.getElementById('main_vid_url').value = props.mainVidUrl ? props.mainVidUrl.split('/').pop() : '';
+            setRange('main_bg_opacity','main_bg_opacity_val', props.mainBgOpacity??100, '%');
+            setRange('main_bg_blur','main_bg_blur_val', props.mainBgBlur??0, 'px');
+
+            // Mini lower-third layout
+            setRange('mini_quote_font_size','mini_quote_font_size_val', props.miniQuoteFontSize??4, 'rem');
+            setRange('mini_min_font_size','mini_min_font_size_val', props.miniMinFontSize??1, 'rem');
+            setRange('mini_ref_font_size','mini_ref_font_size_val', props.miniRefFontSize??1.8, 'rem');
+            document.getElementById('mini_intro_animation').value = props.miniIntroAnimation || 'fade';
+            document.getElementById('mini_outro_animation').value = props.miniOutroAnimation || 'fade';
+            setRange('mini_animation_duration','mini_animation_duration_val', props.miniAnimationDuration??500, 'ms');
+            setRange('mini_width','mini_width_val', props.miniWidth??78, '%');
+            setRange('mini_bottom','mini_bottom_val', props.miniBottom??8, '%');
+            setRange('mini_padding_x','mini_padding_x_val', props.miniPaddingX??40, 'px');
+            setRange('mini_padding_y','mini_padding_y_val', props.miniPaddingY??26, 'px');
+
+            // Mini BG
+            document.getElementById('mini_bg_show').checked = props.miniBgShow !== false;
+            document.getElementById('mini_bg_type').value = props.miniBgType || 'color';
+            showSections(miniSections, props.miniBgType || 'color');
+            document.getElementById('mini_bg_color').value = props.miniBgColor || '#a52a2a';
+            const op = props.miniBgOpacity ?? 85;
+            setRange('mini_bg_opacity','mini_bg_opacity_val', op, '%');
+            setRange('mini_bg_opacity_grad','mini_bg_opacity_grad_val', op, '%');
+            setRange('mini_bg_opacity_img','mini_bg_opacity_img_val', op, '%');
+            setRange('mini_bg_opacity_vid','mini_bg_opacity_vid_val', op, '%');
+            document.getElementById('grad_color1').value = props.gradColor1 || '#1a1a2e';
+            document.getElementById('grad_color2').value = props.gradColor2 || '#16213e';
+            document.getElementById('grad_color3').value = props.gradColor3 || '#0f3460';
+            setRange('grad_angle','grad_angle_val', props.gradAngle??135, 'deg');
+            document.getElementById('bg_image_url').value = props.bgImageUrl ? props.bgImageUrl.split('/').pop() : '';
+            document.getElementById('img_fit').value = props.imgFit || 'cover';
+            document.getElementById('bg_video_url').value = props.bgVideoUrl ? props.bgVideoUrl.split('/').pop() : '';
+            setRange('mini_bg_radius','mini_bg_radius_val', props.miniBgRadius??32, 'px');
+            setRange('mini_bg_blur','mini_bg_blur_val', props.miniBgBlur??0, 'px');
+        }
+
+        function setRange(id, valId, val, unit) {
+            const el = document.getElementById(id);
+            const ve = valId ? document.getElementById(valId) : null;
+            if (el) el.value = val;
+            if (ve) ve.textContent = val + unit;
+        }
+
+        socket.on('receiveConfig', (data) => {
+            if (data && data.type === 'bible_properties' && data.properties) {
+                syncUI(data.properties);
+            }
+        });
+    </script>
+</body>
+</html>
